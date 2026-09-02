@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10131f">
+<meta name="description" content="Bible Quiz — test your knowledge with questions generated from the Bible itself. Four modes, scores and points saved.">
+<title>Bible Quiz — Holy Bible</title>
+<link rel="icon" type="image/svg+xml" href="app/icon.svg">
+<link rel="manifest" href="app/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app/css/style.css">
+</head>
+<body data-page="quiz">
+
+<div class="page" id="pageContent">
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-home" id="quizHome">
+      <div class="quiz-hero">
+        <div class="quiz-hero-ico">🏆</div>
+        <h2>Bible Quiz</h2>
+        <p>Test your knowledge of Scripture with questions generated from the Bible itself.</p>
+      </div>
+      <div class="quiz-stats-row">
+        <div class="q-stat"><div class="q-stat-num" id="qsPlayed">0</div><div class="q-stat-lbl">Quizzes</div></div>
+        <div class="q-stat"><div class="q-stat-num" id="qsBest">0%</div><div class="q-stat-lbl">Best Score</div></div>
+        <div class="q-stat"><div class="q-stat-num" id="qsPoints">0</div><div class="q-stat-lbl">Points</div></div>
+      </div>
+      <h3 class="quiz-sec">Choose a mode</h3>
+      <button class="quiz-mode" data-mode="mixed"><span class="qm-ico">🎲</span><span><b>Mixed Challenge</b><small>All question types · 10 questions</small></span></button>
+      <button class="quiz-mode" data-mode="whosaid"><span class="qm-ico">📜</span><span><b>Finish the Verse</b><small>Complete famous scriptures</small></span></button>
+      <button class="quiz-mode" data-mode="whichbook"><span class="qm-ico">📚</span><span><b>Which Book?</b><small>Guess the book a verse is from</small></span></button>
+      <button class="quiz-mode" data-mode="order"><span class="qm-ico">🔢</span><span><b>Book Order</b><small>Know the order of the 66 books</small></span></button>
+    </div>
+
+    <div class="quiz-game" id="quizGame" hidden>
+      <div class="quiz-top">
+        <button class="quiz-quit" id="quizQuit">✕</button>
+        <div class="quiz-progressbar"><div id="quizProgress"></div></div>
+        <div class="quiz-score" id="quizScore">0</div>
+      </div>
+      <div class="quiz-qnum" id="quizQnum">Question 1 of 10</div>
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-next" id="quizNext" hidden>Next Question →</button>
+    </div>
+
+    <div class="quiz-results" id="quizResults" hidden>
+      <div class="qr-emoji" id="qrEmoji">🎉</div>
+      <h2 id="qrTitle">Well done!</h2>
+      <div class="qr-score" id="qrScore">8/10</div>
+      <div class="qr-verse" id="qrVerse"></div>
+      <button class="quiz-mode qr-again" id="qrAgain"><span class="qm-ico">🔄</span><span><b>Play Again</b></span></button>
+      <button class="quiz-mode" id="qrHome"><span class="qm-ico">🏠</span><span><b>Quiz Home</b></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="shell"></div>
+
+<script src="app/js/data.js"></script>
+<script src="app/js/quiz.js"></script>
+<script src="app/js/shell.js"></script>
+<script src="app/js/quiz-page.js"></script>
+</body>
+</html>

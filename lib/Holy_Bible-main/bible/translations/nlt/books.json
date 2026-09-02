@@ -1,0 +1,600 @@
+{
+  "translation": "NLT",
+  "name": "New Living Translation",
+  "books": [
+    {
+      "id": 1,
+      "name": "Genesis",
+      "slug": "genesis",
+      "testament": "OT",
+      "chapters": 50,
+      "verses": 1533,
+      "text_verses": 1533
+    },
+    {
+      "id": 2,
+      "name": "Exodus",
+      "slug": "exodus",
+      "testament": "OT",
+      "chapters": 40,
+      "verses": 1213,
+      "text_verses": 1213
+    },
+    {
+      "id": 3,
+      "name": "Leviticus",
+      "slug": "leviticus",
+      "testament": "OT",
+      "chapters": 27,
+      "verses": 859,
+      "text_verses": 859
+    },
+    {
+      "id": 4,
+      "name": "Numbers",
+      "slug": "numbers",
+      "testament": "OT",
+      "chapters": 36,
+      "verses": 1288,
+      "text_verses": 1264
+    },
+    {
+      "id": 5,
+      "name": "Deuteronomy",
+      "slug": "deuteronomy",
+      "testament": "OT",
+      "chapters": 34,
+      "verses": 959,
+      "text_verses": 959
+    },
+    {
+      "id": 6,
+      "name": "Joshua",
+      "slug": "joshua",
+      "testament": "OT",
+      "chapters": 24,
+      "verses": 658,
+      "text_verses": 658
+    },
+    {
+      "id": 7,
+      "name": "Judges",
+      "slug": "judges",
+      "testament": "OT",
+      "chapters": 21,
+      "verses": 618,
+      "text_verses": 618
+    },
+    {
+      "id": 8,
+      "name": "Ruth",
+      "slug": "ruth",
+      "testament": "OT",
+      "chapters": 4,
+      "verses": 85,
+      "text_verses": 85
+    },
+    {
+      "id": 9,
+      "name": "1 Samuel",
+      "slug": "1_samuel",
+      "testament": "OT",
+      "chapters": 31,
+      "verses": 810,
+      "text_verses": 810
+    },
+    {
+      "id": 10,
+      "name": "2 Samuel",
+      "slug": "2_samuel",
+      "testament": "OT",
+      "chapters": 24,
+      "verses": 695,
+      "text_verses": 695
+    },
+    {
+      "id": 11,
+      "name": "1 Kings",
+      "slug": "1_kings",
+      "testament": "OT",
+      "chapters": 22,
+      "verses": 816,
+      "text_verses": 816
+    },
+    {
+      "id": 12,
+      "name": "2 Kings",
+      "slug": "2_kings",
+      "testament": "OT",
+      "chapters": 25,
+      "verses": 719,
+      "text_verses": 719
+    },
+    {
+      "id": 13,
+      "name": "1 Chronicles",
+      "slug": "1_chronicles",
+      "testament": "OT",
+      "chapters": 29,
+      "verses": 942,
+      "text_verses": 942
+    },
+    {
+      "id": 14,
+      "name": "2 Chronicles",
+      "slug": "2_chronicles",
+      "testament": "OT",
+      "chapters": 36,
+      "verses": 822,
+      "text_verses": 822
+    },
+    {
+      "id": 15,
+      "name": "Ezra",
+      "slug": "ezra",
+      "testament": "OT",
+      "chapters": 10,
+      "verses": 280,
+      "text_verses": 280
+    },
+    {
+      "id": 16,
+      "name": "Nehemiah",
+      "slug": "nehemiah",
+      "testament": "OT",
+      "chapters": 13,
+      "verses": 406,
+      "text_verses": 406
+    },
+    {
+      "id": 17,
+      "name": "Esther",
+      "slug": "esther",
+      "testament": "OT",
+      "chapters": 10,
+      "verses": 167,
+      "text_verses": 167
+    },
+    {
+      "id": 18,
+      "name": "Job",
+      "slug": "job",
+      "testament": "OT",
+      "chapters": 42,
+      "verses": 1070,
+      "text_verses": 1070
+    },
+    {
+      "id": 19,
+      "name": "Psalms",
+      "slug": "psalms",
+      "testament": "OT",
+      "chapters": 150,
+      "verses": 2461,
+      "text_verses": 2461
+    },
+    {
+      "id": 20,
+      "name": "Proverbs",
+      "slug": "proverbs",
+      "testament": "OT",
+      "chapters": 31,
+      "verses": 915,
+      "text_verses": 915
+    },
+    {
+      "id": 21,
+      "name": "Ecclesiastes",
+      "slug": "ecclesiastes",
+      "testament": "OT",
+      "chapters": 12,
+      "verses": 222,
+      "text_verses": 222
+    },
+    {
+      "id": 22,
+      "name": "Song of Solomon",
+      "slug": "song_of_solomon",
+      "testament": "OT",
+      "chapters": 8,
+      "verses": 117,
+      "text_verses": 117
+    },
+    {
+      "id": 23,
+      "name": "Isaiah",
+      "slug": "isaiah",
+      "testament": "OT",
+      "chapters": 66,
+      "verses": 1292,
+      "text_verses": 1292
+    },
+    {
+      "id": 24,
+      "name": "Jeremiah",
+      "slug": "jeremiah",
+      "testament": "OT",
+      "chapters": 52,
+      "verses": 1364,
+      "text_verses": 1364
+    },
+    {
+      "id": 25,
+      "name": "Lamentations",
+      "slug": "lamentations",
+      "testament": "OT",
+      "chapters": 5,
+      "verses": 154,
+      "text_verses": 154
+    },
+    {
+      "id": 26,
+      "name": "Ezekiel",
+      "slug": "ezekiel",
+      "testament": "OT",
+      "chapters": 48,
+      "verses": 1273,
+      "text_verses": 1273
+    },
+    {
+      "id": 27,
+      "name": "Daniel",
+      "slug": "daniel",
+      "testament": "OT",
+      "chapters": 12,
+      "verses": 357,
+      "text_verses": 357
+    },
+    {
+      "id": 28,
+      "name": "Hosea",
+      "slug": "hosea",
+      "testament": "OT",
+      "chapters": 14,
+      "verses": 197,
+      "text_verses": 197
+    },
+    {
+      "id": 29,
+      "name": "Joel",
+      "slug": "joel",
+      "testament": "OT",
+      "chapters": 3,
+      "verses": 73,
+      "text_verses": 73
+    },
+    {
+      "id": 30,
+      "name": "Amos",
+      "slug": "amos",
+      "testament": "OT",
+      "chapters": 9,
+      "verses": 146,
+      "text_verses": 146
+    },
+    {
+      "id": 31,
+      "name": "Obadiah",
+      "slug": "obadiah",
+      "testament": "OT",
+      "chapters": 1,
+      "verses": 21,
+      "text_verses": 21
+    },
+    {
+      "id": 32,
+      "name": "Jonah",
+      "slug": "jonah",
+      "testament": "OT",
+      "chapters": 4,
+      "verses": 48,
+      "text_verses": 48
+    },
+    {
+      "id": 33,
+      "name": "Micah",
+      "slug": "micah",
+      "testament": "OT",
+      "chapters": 7,
+      "verses": 105,
+      "text_verses": 105
+    },
+    {
+      "id": 34,
+      "name": "Nahum",
+      "slug": "nahum",
+      "testament": "OT",
+      "chapters": 3,
+      "verses": 47,
+      "text_verses": 47
+    },
+    {
+      "id": 35,
+      "name": "Habakkuk",
+      "slug": "habakkuk",
+      "testament": "OT",
+      "chapters": 3,
+      "verses": 56,
+      "text_verses": 56
+    },
+    {
+      "id": 36,
+      "name": "Zephaniah",
+      "slug": "zephaniah",
+      "testament": "OT",
+      "chapters": 3,
+      "verses": 53,
+      "text_verses": 53
+    },
+    {
+      "id": 37,
+      "name": "Haggai",
+      "slug": "haggai",
+      "testament": "OT",
+      "chapters": 2,
+      "verses": 38,
+      "text_verses": 38
+    },
+    {
+      "id": 38,
+      "name": "Zechariah",
+      "slug": "zechariah",
+      "testament": "OT",
+      "chapters": 14,
+      "verses": 211,
+      "text_verses": 211
+    },
+    {
+      "id": 39,
+      "name": "Malachi",
+      "slug": "malachi",
+      "testament": "OT",
+      "chapters": 4,
+      "verses": 55,
+      "text_verses": 55
+    },
+    {
+      "id": 40,
+      "name": "Matthew",
+      "slug": "matthew",
+      "testament": "NT",
+      "chapters": 28,
+      "verses": 1071,
+      "text_verses": 1068
+    },
+    {
+      "id": 41,
+      "name": "Mark",
+      "slug": "mark",
+      "testament": "NT",
+      "chapters": 16,
+      "verses": 678,
+      "text_verses": 673
+    },
+    {
+      "id": 42,
+      "name": "Luke",
+      "slug": "luke",
+      "testament": "NT",
+      "chapters": 24,
+      "verses": 1151,
+      "text_verses": 1149
+    },
+    {
+      "id": 43,
+      "name": "John",
+      "slug": "john",
+      "testament": "NT",
+      "chapters": 21,
+      "verses": 879,
+      "text_verses": 878
+    },
+    {
+      "id": 44,
+      "name": "Acts",
+      "slug": "acts",
+      "testament": "NT",
+      "chapters": 28,
+      "verses": 1007,
+      "text_verses": 1003
+    },
+    {
+      "id": 45,
+      "name": "Romans",
+      "slug": "romans",
+      "testament": "NT",
+      "chapters": 16,
+      "verses": 433,
+      "text_verses": 432
+    },
+    {
+      "id": 46,
+      "name": "1 Corinthians",
+      "slug": "1_corinthians",
+      "testament": "NT",
+      "chapters": 16,
+      "verses": 437,
+      "text_verses": 437
+    },
+    {
+      "id": 47,
+      "name": "2 Corinthians",
+      "slug": "2_corinthians",
+      "testament": "NT",
+      "chapters": 13,
+      "verses": 257,
+      "text_verses": 257
+    },
+    {
+      "id": 48,
+      "name": "Galatians",
+      "slug": "galatians",
+      "testament": "NT",
+      "chapters": 6,
+      "verses": 149,
+      "text_verses": 149
+    },
+    {
+      "id": 49,
+      "name": "Ephesians",
+      "slug": "ephesians",
+      "testament": "NT",
+      "chapters": 6,
+      "verses": 155,
+      "text_verses": 155
+    },
+    {
+      "id": 50,
+      "name": "Philippians",
+      "slug": "philippians",
+      "testament": "NT",
+      "chapters": 4,
+      "verses": 104,
+      "text_verses": 104
+    },
+    {
+      "id": 51,
+      "name": "Colossians",
+      "slug": "colossians",
+      "testament": "NT",
+      "chapters": 4,
+      "verses": 95,
+      "text_verses": 95
+    },
+    {
+      "id": 52,
+      "name": "1 Thessalonians",
+      "slug": "1_thessalonians",
+      "testament": "NT",
+      "chapters": 5,
+      "verses": 89,
+      "text_verses": 89
+    },
+    {
+      "id": 53,
+      "name": "2 Thessalonians",
+      "slug": "2_thessalonians",
+      "testament": "NT",
+      "chapters": 3,
+      "verses": 47,
+      "text_verses": 47
+    },
+    {
+      "id": 54,
+      "name": "1 Timothy",
+      "slug": "1_timothy",
+      "testament": "NT",
+      "chapters": 6,
+      "verses": 113,
+      "text_verses": 113
+    },
+    {
+      "id": 55,
+      "name": "2 Timothy",
+      "slug": "2_timothy",
+      "testament": "NT",
+      "chapters": 4,
+      "verses": 83,
+      "text_verses": 83
+    },
+    {
+      "id": 56,
+      "name": "Titus",
+      "slug": "titus",
+      "testament": "NT",
+      "chapters": 3,
+      "verses": 46,
+      "text_verses": 46
+    },
+    {
+      "id": 57,
+      "name": "Philemon",
+      "slug": "philemon",
+      "testament": "NT",
+      "chapters": 1,
+      "verses": 25,
+      "text_verses": 25
+    },
+    {
+      "id": 58,
+      "name": "Hebrews",
+      "slug": "hebrews",
+      "testament": "NT",
+      "chapters": 13,
+      "verses": 303,
+      "text_verses": 303
+    },
+    {
+      "id": 59,
+      "name": "James",
+      "slug": "james",
+      "testament": "NT",
+      "chapters": 5,
+      "verses": 108,
+      "text_verses": 108
+    },
+    {
+      "id": 60,
+      "name": "1 Peter",
+      "slug": "1_peter",
+      "testament": "NT",
+      "chapters": 5,
+      "verses": 105,
+      "text_verses": 105
+    },
+    {
+      "id": 61,
+      "name": "2 Peter",
+      "slug": "2_peter",
+      "testament": "NT",
+      "chapters": 3,
+      "verses": 61,
+      "text_verses": 61
+    },
+    {
+      "id": 62,
+      "name": "1 John",
+      "slug": "1_john",
+      "testament": "NT",
+      "chapters": 5,
+      "verses": 105,
+      "text_verses": 105
+    },
+    {
+      "id": 63,
+      "name": "2 John",
+      "slug": "2_john",
+      "testament": "NT",
+      "chapters": 1,
+      "verses": 13,
+      "text_verses": 13
+    },
+    {
+      "id": 64,
+      "name": "3 John",
+      "slug": "3_john",
+      "testament": "NT",
+      "chapters": 1,
+      "verses": 15,
+      "text_verses": 15
+    },
+    {
+      "id": 65,
+      "name": "Jude",
+      "slug": "jude",
+      "testament": "NT",
+      "chapters": 1,
+      "verses": 25,
+      "text_verses": 25
+    },
+    {
+      "id": 66,
+      "name": "Revelation",
+      "slug": "revelation",
+      "testament": "NT",
+      "chapters": 22,
+      "verses": 405,
+      "text_verses": 405
+    }
+  ]
+}

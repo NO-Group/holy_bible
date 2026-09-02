@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10131f">
+<meta name="description" content="Read the Holy Bible — 5 translations plus the original Hebrew & Greek, with read-aloud, side-by-side compare and progress tracking.">
+<title>Read — Holy Bible</title>
+<link rel="icon" type="image/svg+xml" href="app/icon.svg">
+<link rel="manifest" href="app/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app/css/style.css">
+</head>
+<body data-page="read">
+
+<div class="page" id="pageContent">
+  <div class="reader" id="reader">
+    <div class="reader-book-header">
+      <div class="rb-book" id="readerBookName"></div>
+      <div class="rb-chapter" id="readerChapterNum"></div>
+    </div>
+
+    <div class="reader-toolbar" id="readerToolbar">
+      <button class="rt-btn" id="btnPrevCh" title="Previous chapter">‹</button>
+      <button class="rt-btn rt-audio" id="btnAudio" title="Read aloud">
+        <svg viewBox="0 0 24 24" class="audio-ico-play"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24" class="audio-ico-pause" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+        <span id="audioLabel">Listen</span>
+      </button>
+      <select class="rt-select" id="audioRate" title="Speech rate">
+        <option value="0.75">0.75×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.25">1.25×</option>
+        <option value="1.5">1.5×</option>
+      </select>
+      <button class="rt-btn" id="fontMinusReader" title="Smaller text">A−</button>
+      <button class="rt-btn" id="fontPlusReader" title="Larger text">A+</button>
+      <button class="rt-btn rt-compare" id="btnCompare" title="Compare translations">⇄</button>
+      <button class="rt-btn" id="btnNextCh" title="Next chapter">›</button>
+    </div>
+
+    <div class="compare-strip" id="compareStrip" hidden>
+      <span class="compare-label">Compare with</span>
+      <select class="rt-select" id="compareCode"></select>
+    </div>
+
+    <div class="verses-wrap" id="versesWrap">
+      <div class="verses" id="verses"></div>
+      <div class="verses compare" id="versesCompare" hidden></div>
+    </div>
+
+    <div class="chapter-nav">
+      <button class="chapnav-btn" id="btnMarkRead">✓ Mark chapter read</button>
+      <button class="chapnav-btn ghost" id="btnLibraryCta">🔖 Library</button>
+    </div>
+  </div>
+</div>
+
+<div id="shell"></div>
+
+<script src="app/js/data.js"></script>
+<script src="app/js/quiz.js"></script>
+<script src="app/js/shell.js"></script>
+<script src="app/js/reader.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "books": 66,
+  "chapters_per_bible": 1189,
+  "translations": [
+    {
+      "code": "kjv",
+      "name": "King James Version",
+      "path": "translations/kjv",
+      "books_index": "translations/kjv/books.json",
+      "chapter_path_pattern": "translations/kjv/{book_slug}/chapter_{n}.json"
+    },
+    {
+      "code": "niv",
+      "name": "New International Version",
+      "path": "translations/niv",
+      "books_index": "translations/niv/books.json",
+      "chapter_path_pattern": "translations/niv/{book_slug}/chapter_{n}.json"
+    },
+    {
+      "code": "nlt",
+      "name": "New Living Translation",
+      "path": "translations/nlt",
+      "books_index": "translations/nlt/books.json",
+      "chapter_path_pattern": "translations/nlt/{book_slug}/chapter_{n}.json"
+    },
+    {
+      "code": "nwt",
+      "name": "New World Translation (2013 Revision)",
+      "path": "translations/nwt",
+      "books_index": "translations/nwt/books.json",
+      "chapter_path_pattern": "translations/nwt/{book_slug}/chapter_{n}.json"
+    },
+    {
+      "code": "original",
+      "name": "Original Manuscripts (Hebrew Masoretic Text / Greek Textus Receptus)",
+      "path": "translations/original",
+      "books_index": "translations/original/books.json",
+      "chapter_path_pattern": "translations/original/{book_slug}/chapter_{n}.json"
+    }
+  ]
+}
