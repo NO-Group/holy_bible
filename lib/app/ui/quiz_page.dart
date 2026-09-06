@@ -264,14 +264,16 @@ class _OptionTile extends StatelessWidget {
     final isPickedWrong = picked == index && index != answer;
     final isDisabled = picked != null;
     Color bg = theme.surfaceAlt;
-    BorderSide border = BorderSide.none;
+    BoxBorder? border;
     if (picked != null) {
       if (isAnswer) {
         bg = const Color(0xFF7ED99A).withValues(alpha: 0.20);
-        border = const BorderSide(color: Color(0xFF2E9E62), width: 1.4);
+        border = const Border(
+            side: BorderSide(color: Color(0xFF2E9E62), width: 1.4));
       } else if (isPickedWrong) {
         bg = const Color(0xFFF5A3C0).withValues(alpha: 0.20);
-        border = const BorderSide(color: Color(0xFFC2547C), width: 1.4);
+        border = const Border(
+            side: BorderSide(color: Color(0xFFC2547C), width: 1.4));
       }
     }
     return Padding(

@@ -21,7 +21,6 @@ class LibraryPage extends StatelessWidget {
       length: 5,
       child: Builder(
         builder: (context) {
-          final app = AppScope.of(context);
           final theme = appThemeOf(context);
           return Scaffold(
             appBar: AppBar(

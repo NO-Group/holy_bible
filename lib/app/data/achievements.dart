@@ -11,8 +11,7 @@ class AchievementDef {
   final String title;
   final String desc;
   final double value; // current metric needed
-  final String Function(AppStore store) metric;
-  final String Function(AppStore store) display;
+  final double Function(AppStore store) metric;
   final double Function(AppStore store) progress;
 
   const AchievementDef({
@@ -22,7 +21,6 @@ class AchievementDef {
     required this.desc,
     required this.value,
     required this.metric,
-    required this.display,
     required this.progress,
   });
 }
@@ -35,7 +33,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 10 chapters',
     value: 10,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -45,7 +42,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 50 chapters',
     value: 50,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -55,7 +51,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 100 chapters',
     value: 100,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -65,7 +60,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 250 chapters',
     value: 250,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -75,7 +69,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 500 chapters',
     value: 500,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -85,7 +78,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read 1,000 chapters',
     value: 1000,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -95,7 +87,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Read all 1,189 chapters',
     value: 1189,
     metric: _chapters,
-    display: _chapters,
     progress: _chapters,
   ),
   AchievementDef(
@@ -105,7 +96,6 @@ const List<AchievementDef> kAchievements = [
     desc: '3-day reading streak',
     value: 3,
     metric: _streak,
-    display: _streak,
     progress: _streak,
   ),
   AchievementDef(
@@ -115,7 +105,6 @@ const List<AchievementDef> kAchievements = [
     desc: '7-day reading streak',
     value: 7,
     metric: _streak,
-    display: _streak,
     progress: _streak,
   ),
   AchievementDef(
@@ -125,7 +114,6 @@ const List<AchievementDef> kAchievements = [
     desc: '30-day reading streak',
     value: 30,
     metric: _streak,
-    display: _streak,
     progress: _streak,
   ),
   AchievementDef(
@@ -135,7 +123,6 @@ const List<AchievementDef> kAchievements = [
     desc: '100-day reading streak',
     value: 100,
     metric: _streak,
-    display: _streak,
     progress: _streak,
   ),
   AchievementDef(
@@ -145,7 +132,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Play 5 quiz rounds',
     value: 5,
     metric: _quizzes,
-    display: _quizzes,
     progress: _quizzes,
   ),
   AchievementDef(
@@ -155,7 +141,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Play 25 quiz rounds',
     value: 25,
     metric: _quizzes,
-    display: _quizzes,
     progress: _quizzes,
   ),
   AchievementDef(
@@ -165,7 +150,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Memorize 10 verses',
     value: 10,
     metric: _memorized,
-    display: _memorized,
     progress: _memorized,
   ),
   AchievementDef(
@@ -175,7 +159,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Memorize 25 verses',
     value: 25,
     metric: _memorized,
-    display: _memorized,
     progress: _memorized,
   ),
   AchievementDef(
@@ -185,7 +168,6 @@ const List<AchievementDef> kAchievements = [
     desc: 'Write 20 notes',
     value: 20,
     metric: _notes,
-    display: _notes,
     progress: _notes,
   ),
 ];

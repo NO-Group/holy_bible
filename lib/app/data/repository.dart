@@ -25,8 +25,8 @@ class BibleRepository {
   /// bundled translations) — built lazily from the KJV bundle so a single
   /// source of truth drives chapter navigation.
   Future<List<BookInfo>> _canonicalBooks() async {
-    final bundle = await bundle('kjv');
-    return bundle.info;
+    final b = await bundle('kjv');
+    return b.info;
   }
 
   Future<BibleBundle> bundle(String code) async {
@@ -102,8 +102,8 @@ class BibleRepository {
 
   /// Chapter content for `code` / `slug` / 1-based `chapter`.
   Future<ChapterData> chapter(String code, String slug, int chapter) async {
-    final bundle = await bundle(code);
-    final book = bundle.bookBySlug(slug);
+    final b = await bundle(code);
+    final book = b.bookBySlug(slug);
     final verses = book.chapters[chapter - 1];
     return ChapterData(
       code: code,

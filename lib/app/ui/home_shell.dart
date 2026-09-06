@@ -9,7 +9,6 @@ import 'scope.dart';
 import 'home_page.dart';
 import 'library_page.dart';
 import 'plans_page.dart';
-import 'quiz_page.dart';
 import 'reader_page.dart';
 import 'search_page.dart';
 

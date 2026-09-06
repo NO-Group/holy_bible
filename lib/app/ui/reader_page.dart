@@ -401,7 +401,6 @@ class _ChapterPageState extends State<ChapterPage> {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
-    final theme = appThemeOf(context);
     final future = _primaryFuture ?? _fetch(app.translationCode);
     _primaryFuture = future;
     return FutureBuilder<ChapterData>(
@@ -631,7 +630,6 @@ class _CompareBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = appThemeOf(context);
     return FutureBuilder<ChapterData>(
       future: secondaryFuture,
       builder: (context, snapshot) {
@@ -1419,13 +1417,15 @@ class _BookGroup extends StatelessWidget {
                     vertical: 10, horizontal: 4),
                 child: Row(
                   children: [
-                    Text(
-                      '${book.id}',
-                      style: TextStyle(
-                        color: theme.textDim,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
-                        width: 30,
+                    SizedBox(
+                      width: 30,
+                      child: Text(
+                        '${book.id}',
+                        style: TextStyle(
+                          color: theme.textDim,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     Expanded(

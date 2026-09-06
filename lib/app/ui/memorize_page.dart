@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 
 import '../data/models.dart';
 import '../data/verse_refs.dart';
-import '../store.dart';
-import '../theme.dart';
 import 'scope.dart';
 import 'widgets.dart';
 

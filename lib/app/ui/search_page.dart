@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../data/models.dart';
-import '../store.dart';
 import '../theme.dart';
 import 'scope.dart';
 import 'widgets.dart';

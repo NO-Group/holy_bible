@@ -8,7 +8,6 @@ import '../data/achievements.dart';
 import '../data/models.dart';
 import '../data/plans.dart';
 import '../store.dart';
-import '../theme.dart';
 import 'scope.dart';
 import 'widgets.dart';
 
