@@ -307,9 +307,9 @@ class _HomePageState extends State<HomePage> {
                         final books = await app.repo.books(
                             app.translationCode);
                         if (books.isEmpty) return;
-                        final book = books[RNG.nextInt(books.length)];
+                        final book = books[rng.nextInt(books.length)];
                         final ch = 1 +
-                            RNG.nextInt(book.chapterCount);
+                            rng.nextInt(book.chapterCount);
                         app.openRef(VerseRef(book.slug, ch));
                       },
                     ),
@@ -493,7 +493,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-final Random RNG = Random();
+final Random rng = Random();
 
 class _StreakChip extends StatelessWidget {
   final int days;
