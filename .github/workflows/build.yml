@@ -47,6 +47,9 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: Test
+        run: flutter test
+
       - name: Publish diagnostics (on failure)
         if: failure()
         run: |
@@ -58,9 +61,6 @@ jobs:
           git add -f ci/analyze.log ci/test.log
           git commit -q -m "ci: diagnostics" || true
           git push origin HEAD:arena/ci-diagnostics --force || true
-
-      - name: Test
-        run: flutter test
 
   build:
     name: Build release APKs
