@@ -21,9 +21,11 @@ void main() {
     expect(find.text('Search'), findsOneWidget);
     expect(find.text('Plans'), findsOneWidget);
 
-    // Home quick actions.
+    // Home quick actions (scroll them into view first).
     await tester.pump(const Duration(milliseconds: 50));
+    await tester.scrollUntilVisible(find.text('Random chapter'), 200);
     expect(find.text('Random chapter'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Memorize'), 200);
     expect(find.text('Memorize'), findsOneWidget);
   });
 }

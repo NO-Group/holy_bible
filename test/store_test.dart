@@ -49,6 +49,7 @@ void main() {
     store.toggleMemorized(const VerseRef('psalms', 23, 1));
     expect(store.memorizedCount, 1);
     expect(store.isMemorized('psalms', 23, 1), isTrue);
+    await store.persist();
 
     // Reload from the same preferences store.
     final reloaded = AppStore(BibleRepository());
@@ -63,6 +64,7 @@ void main() {
     store.setFontSize(21);
     store.setFontFamily('mono');
     store.setActivePlan('nt');
+    await store.persist();
 
     final reloaded = AppStore(BibleRepository());
     await reloaded.load();

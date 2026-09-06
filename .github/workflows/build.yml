@@ -5,9 +5,11 @@ on:
     branches: [main, 'arena/**']
     paths-ignore:
       - 'ci/analyze.log'
+      - 'ci/test.log'
   pull_request:
     paths-ignore:
       - 'ci/analyze.log'
+      - 'ci/test.log'
   workflow_dispatch:
 
 permissions:
@@ -45,15 +47,16 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
-      - name: Publish analyze diagnostics (on failure)
+      - name: Publish diagnostics (on failure)
         if: failure()
         run: |
           mkdir -p ci
           flutter analyze --no-fatal-infos > ci/analyze.log 2>&1 || true
+          flutter test > ci/test.log 2>&1 || true
           git config user.name "ci-diagnostics"
           git config user.email "ci@local"
-          git add -f ci/analyze.log
-          git commit -q -m "ci: analyze diagnostics" || true
+          git add -f ci/analyze.log ci/test.log
+          git commit -q -m "ci: diagnostics" || true
           git push origin HEAD:arena/ci-diagnostics --force || true
 
       - name: Test

@@ -27,7 +27,7 @@ BibleBundle _syntheticBundle() {
         id: 40,
         name: 'Matthew',
         slug: 'matthew',
-        chapters: chapters(4, 'Matthew'),
+        chapters: chapters(12, 'Matthew'),
       ),
       BundledBook(
         id: 66,
