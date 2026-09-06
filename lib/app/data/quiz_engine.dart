@@ -106,8 +106,10 @@ class QuizEngine {
     final famous = kFamousVerses[_rnd(kFamousVerses.length)];
     final bIdx = bundle.books.indexWhere((b) => b.slug == famous.slug);
     if (bIdx < 0) return null;
-    final chapter = bundle.books[bIdx].chapters[famous.ch - 1];
-    if (famous.v - 1 >= chapter.length) return null;
+    final chapters = bundle.books[bIdx].chapters;
+    if (famous.ch < 1 || famous.ch > chapters.length) return null;
+    final chapter = chapters[famous.ch - 1];
+    if (famous.v < 1 || famous.v > chapter.length) return null;
     final text = chapter[famous.v - 1];
     if (text.trim().isEmpty) return null;
     final words = text.split(' ');
