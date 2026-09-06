@@ -4,6 +4,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../data/achievements.dart';
 import '../data/models.dart';
 import '../data/plans.dart';
 import '../store.dart';
@@ -140,6 +141,8 @@ class _StatsPageState extends State<StatsPage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 20),
+              _AchievementsCard(),
               const SizedBox(height: 20),
               SectionCard(
                 child: Column(
@@ -291,6 +294,92 @@ class _PlanMiniProgress extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _AchievementsCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final app = AppScope.of(context);
+    final theme = appThemeOf(context);
+    final unlocked = kAchievements.where((a) => isUnlocked(a, app)).length;
+    return SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'ACHIEVEMENTS',
+                  style: TextStyle(
+                    color: theme.accent,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.4,
+                  ),
+                ),
+              ),
+              Text(
+                '$unlocked / ${kAchievements.length}',
+                style: TextStyle(
+                  color: theme.accent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              for (final a in kAchievements)
+                Tooltip(
+                  message:
+                      '${a.title} — ${a.desc} (${a.metric(app).round()}/${a.value.round()})',
+                  child: Container(
+                    width: 64,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                    decoration: BoxDecoration(
+                      color: isUnlocked(a, app)
+                          ? theme.accentSoft
+                          : theme.surfaceAlt,
+                      borderRadius: BorderRadius.circular(14),
+                      border: isUnlocked(a, app)
+                          ? Border.all(color: theme.accent, width: 1.2)
+                          : null,
+                    ),
+                    child: Column(
+                      children: [
+                        Opacity(
+                          opacity: isUnlocked(a, app) ? 1 : 0.38,
+                          child: Text(a.emoji,
+                              style: const TextStyle(fontSize: 20)),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${(a.progress(app) / a.value).clamp(0, 1).toDouble() >= 1 ? '✓' : (a.progress(app) / a.value * 100).round().toString() + '%'}',
+                          style: TextStyle(
+                            color: isUnlocked(a, app)
+                                ? theme.accent
+                                : theme.textDim,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),

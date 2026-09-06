@@ -120,6 +120,24 @@ class SettingsPage extends StatelessWidget {
               ),
               trailing: Text(app.lineHeight.toStringAsFixed(2)),
             ),
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: theme.surfaceAlt,
+              leading: const Icon(Icons.font_download_outlined),
+              title: const Text('Font family'),
+              subtitle: SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'serif', label: Text('Serif')),
+                  ButtonSegment(value: 'sans', label: Text('Sans')),
+                  ButtonSegment(value: 'mono', label: Text('Mono')),
+                ],
+                selected: {app.fontFamily},
+                showSelectedIcon: false,
+                onSelectionChanged: (v) => app.setFontFamily(v.first),
+              ),
+            ),
             SwitchListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -181,12 +199,15 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '• 66 books · 1,189 chapters · 31,104 verses per version\n'
+                    'Selah v2.0 — 66 books · 1,189 chapters · 31,104 verses '
+                    'per version\n'
                     '• Five translations bundled: KJV, NIV, NLT, NWT and the '
                     'original Hebrew (Masoretic Text) & Greek (Textus '
                     'Receptus) manuscripts\n'
-                    '• Parallel reading, full-text search, reading plans, '
-                    'quizzes, notes, highlights and bookmarks — all offline\n'
+                    '• Parallel reading, chapter audio (device speech), '
+                    'full-text search, reading plans, topical study, quizzes, '
+                    'memorization drills, notes, highlights and bookmarks — '
+                    'all offline\n'
                     '• Scripture text © their respective publishers; '
                     'original-language text via public-domain editions '
                     '(WLC, Textus Receptus).',

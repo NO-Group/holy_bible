@@ -1,8 +1,8 @@
 name: holy_bible
-description: "Selah — an advanced offline Bible companion (5 translations incl. original Hebrew/Greek, parallel reading, search, plans, quiz, notes, highlights)."
+description: "Selah — an advanced offline Bible companion (5 translations incl. original Hebrew/Greek, parallel reading, audio, search, plans, quiz, memory, notes, highlights)."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.12.2
@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
+  flutter_tts: ^4.2.3
 
 dev_dependencies:
   flutter_test:

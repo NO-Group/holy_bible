@@ -10,6 +10,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../data/models.dart';
+import '../audio/tts_service.dart';
 import '../data/repository.dart';
 import '../store.dart';
 import '../theme.dart';
@@ -315,11 +316,28 @@ class _ChapterPageState extends State<ChapterPage> {
   bool _scrolled = false;
   bool _awaitingScroll = false;
 
+  final TtsService _tts = TtsService();
+  bool _speaking = false;
+  int? _speakingVerse;
+
+  @override
+  void initState() {
+    super.initState();
+    _tts.available();
+  }
+
+  @override
+  void dispose() {
+    _tts.dispose();
+    super.dispose();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final app = AppScope.of(context);
     if (app.translationCode != _primaryCode) {
+      _stopSpeak();
       _primaryCode = app.translationCode;
       _ref = null;
       _scrolled = false;
@@ -333,6 +351,41 @@ class _ChapterPageState extends State<ChapterPage> {
     } else {
       _secondaryFuture = null;
       _secondaryCode = null;
+    }
+  }
+
+  Future<void> _toggleSpeak(ChapterData data) async {
+    if (_speaking) {
+      await _stopSpeak();
+      return;
+    }
+    setState(() => _speaking = true);
+    try {
+      for (final verse in data.verses) {
+        if (!verse.hasText) continue;
+        if (!mounted || !_speaking) break;
+        setState(() => _speakingVerse = verse.number);
+        await _tts.speak(verse.text);
+      }
+    } catch (_) {
+      // Missing engine / interrupted playback: just stop silently.
+    } finally {
+      if (mounted) {
+        setState(() {
+          _speaking = false;
+          _speakingVerse = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _stopSpeak() async {
+    await _tts.stop();
+    if (mounted && (_speaking || _speakingVerse != null)) {
+      setState(() {
+        _speaking = false;
+        _speakingVerse = null;
+      });
     }
   }
 
@@ -376,7 +429,12 @@ class _ChapterPageState extends State<ChapterPage> {
         return ListView(
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 40),
           children: [
-            _ChapterHeader(data: data, compare: app.compareOn),
+            _ChapterHeader(
+              data: data,
+              compare: app.compareOn,
+              speaking: _speaking,
+              onListen: () => _toggleSpeak(data),
+            ),
             const SizedBox(height: 14),
             if (secondary != null)
               _CompareBody(
@@ -386,6 +444,7 @@ class _ChapterPageState extends State<ChapterPage> {
                 store: app,
                 focusVerse: widget.focusVerse,
                 flashVerse: widget.flashVerse,
+                speakingVerse: _speakingVerse,
               )
             else
               for (final verse in data.verses)
@@ -396,6 +455,7 @@ class _ChapterPageState extends State<ChapterPage> {
                     store: app,
                     focus: widget.focusVerse == verse.number,
                     flash: widget.flashVerse == verse.number,
+                    spoken: _speakingVerse == verse.number,
                   ),
           ],
         );
@@ -445,8 +505,15 @@ class _ChapterPageState extends State<ChapterPage> {
 class _ChapterHeader extends StatelessWidget {
   final ChapterData data;
   final bool compare;
+  final bool speaking;
+  final VoidCallback onListen;
 
-  const _ChapterHeader({required this.data, required this.compare});
+  const _ChapterHeader({
+    required this.data,
+    required this.compare,
+    required this.speaking,
+    required this.onListen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -455,6 +522,8 @@ class _ChapterHeader extends StatelessWidget {
     final secondary = compare
         ? translationByCode(AppScope.of(context).compareCode)
         : null;
+    final words = data.verses.fold<int>(0, (n, v) => n + v.text.split(' ').length);
+    final minutes = (words / 200).ceil().clamp(1, 99);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -506,7 +575,36 @@ class _ChapterHeader extends StatelessWidget {
           translation.name,
           style: TextStyle(color: theme.textDim, fontSize: 12.5),
         ),
-        const Divider(height: 30),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                '$words words · ~$minutes min read',
+                style: TextStyle(color: theme.textDim, fontSize: 13),
+              ),
+            ),
+            TextButton.icon(
+              onPressed: onListen,
+              icon: Icon(
+                speaking
+                    ? Icons.stop_circle_outlined
+                    : Icons.volume_up_outlined,
+                size: 18,
+                color: speaking ? theme.accent : theme.textDim,
+              ),
+              label: Text(
+                speaking ? 'Stop' : 'Listen',
+                style: TextStyle(
+                  color: speaking ? theme.accent : theme.textDim,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const Divider(height: 24),
       ],
     );
   }
@@ -519,6 +617,7 @@ class _CompareBody extends StatelessWidget {
   final AppStore store;
   final int? focusVerse;
   final int? flashVerse;
+  final int? speakingVerse;
 
   const _CompareBody({
     required this.primary,
@@ -527,6 +626,7 @@ class _CompareBody extends StatelessWidget {
     required this.store,
     this.focusVerse,
     this.flashVerse,
+    this.speakingVerse,
   });
 
   @override
@@ -556,6 +656,7 @@ class _CompareBody extends StatelessWidget {
                   store: store,
                   focus: focusVerse == primary.verses[i].number,
                   flash: flashVerse == primary.verses[i].number,
+                  spoken: speakingVerse == primary.verses[i].number,
                 ),
           ],
         );
@@ -571,6 +672,7 @@ class _CompareRow extends StatelessWidget {
   final AppStore store;
   final bool focus;
   final bool flash;
+  final bool spoken;
 
   const _CompareRow({
     required this.primary,
@@ -579,6 +681,7 @@ class _CompareRow extends StatelessWidget {
     required this.store,
     required this.focus,
     required this.flash,
+    this.spoken = false,
   });
 
   @override
@@ -606,7 +709,11 @@ class _CompareRow extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: focus || flash ? theme.accentSoft : Colors.transparent,
+                color: spoken
+                    ? theme.accent.withValues(alpha: 0.22)
+                    : focus || flash
+                        ? theme.accentSoft
+                        : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
@@ -619,6 +726,7 @@ class _CompareRow extends StatelessWidget {
                       fontSize: store.fontSize - 1.5,
                       lineHeight: store.lineHeight,
                       justify: store.justifyText,
+                      family: store.fontFamily,
                     ),
                   if (primary.hasText && secondary.hasText)
                     Padding(
@@ -670,6 +778,7 @@ class _VerseRow extends StatelessWidget {
   final AppStore store;
   final bool focus;
   final bool flash;
+  final bool spoken;
 
   const _VerseRow({
     required this.verse,
@@ -677,6 +786,7 @@ class _VerseRow extends StatelessWidget {
     required this.store,
     required this.focus,
     required this.flash,
+    this.spoken = false,
   });
 
   @override
@@ -698,9 +808,11 @@ class _VerseRow extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 1),
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
-          color: focus || flash
-              ? theme.accentSoft
-              : highlightColor ?? Colors.transparent,
+          color: spoken
+              ? theme.accent.withValues(alpha: 0.22)
+              : focus || flash
+                  ? theme.accentSoft
+                  : highlightColor ?? Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -728,6 +840,7 @@ class _VerseRow extends StatelessWidget {
                 fontSize: store.fontSize,
                 lineHeight: store.lineHeight,
                 justify: store.justifyText,
+                family: store.fontFamily,
               ),
             ),
             if (ann?.bookmark ?? false)
@@ -873,6 +986,20 @@ class _VerseActionSheet extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _SheetAction(
+                        icon: store.isMemorized(ref.slug, ref.chapter, ref.verse)
+                            ? Icons.bookmark_added
+                            : Icons.bookmark_add_outlined,
+                        label: store.isMemorized(ref.slug, ref.chapter, ref.verse)
+                            ? 'Memorized'
+                            : 'Memorize',
+                        highlight: store.isMemorized(
+                            ref.slug, ref.chapter, ref.verse),
+                        onTap: () => store.toggleMemorized(ref),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _SheetAction(
                         icon: Icons.palette_outlined,
                         label: ann?.color != null
                             ? 'Highlighted'
@@ -913,6 +1040,18 @@ class _VerseActionSheet extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (ann != null) ...[
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      store.setHighlight(ref, null);
+                      store.setNote(ref, null);
+                      if (ann.bookmark) store.toggleBookmark(ref);
+                    },
+                    icon: const Icon(Icons.clear_all),
+                    label: const Text('Remove all annotations on this verse'),
+                  ),
+                ],
                 const SizedBox(height: 16),
               ],
             );
@@ -1600,6 +1739,25 @@ class _ReaderSettingsSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
+            Text(
+              'Font',
+              style: TextStyle(color: theme.textDim, fontSize: 12.5),
+            ),
+            const SizedBox(height: 8),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'serif', label: Text('Serif')),
+                ButtonSegment(value: 'sans', label: Text('Sans')),
+                ButtonSegment(value: 'mono', label: Text('Mono')),
+              ],
+              selected: {app.fontFamily},
+              showSelectedIcon: false,
+              onSelectionChanged: (v) {
+                app.setFontFamily(v.first);
+                onChanged();
+              },
+            ),
+            const SizedBox(height: 10),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: app.showVerseNumbers,

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../data/models.dart';
 import '../data/repository.dart';
+import '../data/topics.dart';
 import '../store.dart';
 import '../theme.dart';
 import 'scope.dart';
@@ -17,7 +18,7 @@ class LibraryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Builder(
         builder: (context) {
           final app = AppScope.of(context);
@@ -35,6 +36,7 @@ class LibraryPage extends StatelessWidget {
                   Tab(text: 'Bookmarks'),
                   Tab(text: 'Highlights'),
                   Tab(text: 'Notes'),
+                  Tab(text: 'Topics'),
                 ],
               ),
             ),
@@ -44,6 +46,7 @@ class LibraryPage extends StatelessWidget {
                 _BookmarksTab(),
                 _HighlightsTab(),
                 _NotesTab(),
+                _TopicsTab(),
               ],
             ),
           );
@@ -53,8 +56,30 @@ class LibraryPage extends StatelessWidget {
   }
 }
 
-class _BooksTab extends StatelessWidget {
+class _BooksTab extends StatefulWidget {
   const _BooksTab();
+
+  @override
+  State<_BooksTab> createState() => _BooksTabState();
+}
+
+class _BooksTabState extends State<_BooksTab> {
+  final TextEditingController _filter = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _filter.addListener(() {
+      if (mounted) setState(() => _query = _filter.text.trim().toLowerCase());
+    });
+  }
+
+  @override
+  void dispose() {
+    _filter.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +92,13 @@ class _BooksTab extends StatelessWidget {
         if (books.isEmpty && !snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
-        final ot = books.where((b) => b.isOldTestament).toList();
-        final nt = books.where((b) => !b.isOldTestament).toList();
+        final visible = books
+            .where(
+              (b) => _query.isEmpty || b.name.toLowerCase().contains(_query),
+            )
+            .toList();
+        final ot = visible.where((b) => b.isOldTestament).toList();
+        final nt = visible.where((b) => !b.isOldTestament).toList();
         final read = app.chaptersRead;
         return ListView(
           padding: const EdgeInsets.only(bottom: 32),
@@ -107,8 +137,31 @@ class _BooksTab extends StatelessWidget {
                 ),
               ),
             ),
-            _BookSection(title: 'OLD TESTAMENT', books: ot),
-            _BookSection(title: 'NEW TESTAMENT', books: nt),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
+              child: TextField(
+                controller: _filter,
+                decoration: const InputDecoration(
+                  hintText: 'Filter books…',
+                  prefixIcon: Icon(Icons.filter_list),
+                  isDense: true,
+                ),
+              ),
+            ),
+            if (visible.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(40),
+                child: EmptyState(
+                  icon: Icons.search_off,
+                  title: 'No book matches',
+                  message: 'Try a different name.',
+                ),
+              )
+            else ...[
+              if (ot.isNotEmpty) _BookSection(title: 'OLD TESTAMENT', books: ot),
+              if (nt.isNotEmpty)
+                _BookSection(title: 'NEW TESTAMENT', books: nt),
+            ],
           ],
         );
       },
@@ -495,5 +548,214 @@ class _AnnotationTile extends StatelessWidget {
             )
             .name;
     return '$name ${a.chapter}:${a.verse}';
+  }
+}
+
+
+class _TopicsTab extends StatelessWidget {
+  const _TopicsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = appThemeOf(context);
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+          child: Text(
+            'STUDY BY TOPIC',
+            style: TextStyle(
+              color: theme.accent,
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.4,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+          child: Text(
+            'Verses are gathered live from the current translation by theme.',
+            style: TextStyle(color: theme.textDim, fontSize: 12.5),
+          ),
+        ),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.02,
+          children: [
+            for (final topic in kTopics)
+              Material(
+                color: theme.surfaceAlt,
+                borderRadius: BorderRadius.circular(18),
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => _TopicView(topic: topic),
+                    ),
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(topic.emoji, style: const TextStyle(fontSize: 26)),
+                        const SizedBox(height: 8),
+                        Text(
+                          topic.title,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: theme.text,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w800,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _TopicView extends StatefulWidget {
+  final TopicDef topic;
+
+  const _TopicView({required this.topic});
+
+  @override
+  State<_TopicView> createState() => _TopicViewState();
+}
+
+class _TopicHit {
+  final BookInfo book;
+  final int chapter;
+  final int verse;
+  final String text;
+
+  const _TopicHit(this.book, this.chapter, this.verse, this.text);
+}
+
+class _TopicViewState extends State<_TopicView> {
+  List<_TopicHit>? _hits;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final app = AppScope.read(context);
+    final bundle = await app.repo.bundle(app.translationCode);
+    if (!mounted) return;
+    final keywords = widget.topic.keywords;
+    final out = <_TopicHit>[];
+    for (final book in bundle.books) {
+      for (var c = 0; c < book.chapters.length && out.length < 60; c++) {
+        for (var v = 0; v < book.chapters[c].length && out.length < 60; v++) {
+          final text = book.chapters[c][v];
+          if (text.isEmpty) continue;
+          final lower = text.toLowerCase();
+          if (!keywords.any(lower.contains)) continue;
+          out.add(_TopicHit(
+            BookInfo(
+              id: book.id,
+              name: book.name,
+              slug: book.slug,
+              chapterCount: book.chapters.length,
+            ),
+            c + 1,
+            v + 1,
+            text,
+          ));
+        }
+      }
+    }
+    if (mounted) setState(() => _hits = out);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final app = AppScope.of(context);
+    final theme = appThemeOf(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('${widget.topic.emoji} ${widget.topic.title}'),
+      ),
+      body: _hits == null
+          ? const Center(child: CircularProgressIndicator())
+          : _hits!.isEmpty
+              ? const EmptyState(
+                  icon: Icons.search_off,
+                  title: 'No verses found',
+                  message: 'Try another translation.',
+                )
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 32),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Text(
+                        '${_hits!.length} verses · ${app.translation.name}',
+                        style: TextStyle(
+                          color: theme.textDim,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    for (final hit in _hits!)
+                      Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: InkWell(
+                          onTap: () => app.openRef(VerseRef(
+                            hit.book.slug,
+                            hit.chapter,
+                            hit.verse,
+                          )),
+                          borderRadius: BorderRadius.circular(20),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${hit.book.name} ${hit.chapter}:${hit.verse}',
+                                  style: TextStyle(
+                                    color: theme.accent,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                VerseText(
+                                  hit.text,
+                                  fontSize: app.fontSize - 2,
+                                  lineHeight: app.lineHeight,
+                                  justify: true,
+                                  family: app.fontFamily,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+    );
   }
 }

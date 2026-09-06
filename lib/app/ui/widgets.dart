@@ -60,6 +60,7 @@ class VerseText extends StatelessWidget {
   final double lineHeight;
   final bool justify;
   final TextAlign? align;
+  final String family; // serif | sans | mono
 
   const VerseText(
     this.text, {
@@ -68,7 +69,14 @@ class VerseText extends StatelessWidget {
     required this.lineHeight,
     this.justify = false,
     this.align,
+    this.family = 'serif',
   });
+
+  List<String> get _fallbacks => switch (family) {
+        'sans' => const ['Noto Sans', 'Roboto', 'Arial', 'sans-serif'],
+        'mono' => const ['Noto Sans Mono', 'Courier New', 'monospace'],
+        _ => const ['Georgia', 'Times New Roman', 'Noto Serif', 'serif'],
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +88,8 @@ class VerseText extends StatelessWidget {
         color: theme.text,
         fontSize: fontSize,
         height: lineHeight,
-        fontFamilyFallback: const [
-          'Georgia',
-          'Times New Roman',
-          'Noto Serif',
-          'serif',
-        ],
-        letterSpacing: 0.1,
+        fontFamilyFallback: _fallbacks,
+        letterSpacing: family == 'mono' ? 0.2 : 0.1,
       ),
     );
   }

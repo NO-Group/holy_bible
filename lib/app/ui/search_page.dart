@@ -38,6 +38,7 @@ class _SearchPageState extends State<SearchPage> {
   String _query = '';
   _Scope _scope = _Scope.all;
   String? _bookScope;
+  String _searchCode = '';
   List<BookInfo> _books = const [];
   List<_SearchResult> _results = const [];
   int _bookHits = 0;
@@ -47,6 +48,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+    _searchCode = AppScope.read(context).translationCode;
     _controller.addListener(() {
       if (mounted) setState(() {});
     });
@@ -82,9 +84,9 @@ class _SearchPageState extends State<SearchPage> {
   void _runSearch() {
     final app = AppScope.read(context);
     final repo = app.repo;
-    final bundle = repo.bundleIfLoaded(app.translationCode);
+    final bundle = repo.bundleIfLoaded(_searchCode);
     if (bundle == null) {
-      repo.bundle(app.translationCode).then((_) {
+      repo.bundle(_searchCode).then((_) {
         if (mounted) setState(() {
           _searching = true;
           _runSearch();
@@ -199,6 +201,36 @@ class _SearchPageState extends State<SearchPage> {
                               orElse: () => _books.first,
                             )
                             .name),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 44,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              children: [
+                for (final t in kTranslations)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(t.short),
+                      selected: _searchCode == t.code,
+                      showCheckmark: false,
+                      labelStyle: TextStyle(
+                        color: _searchCode == t.code
+                            ? theme.accent
+                            : theme.textDim,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      selectedColor: theme.accentSoft,
+                      onSelected: (_) {
+                        setState(() => _searchCode = t.code);
+                        if (_query.isNotEmpty) _runSearch();
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
@@ -348,7 +380,7 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
-                '${_results.length} matches · $_bookHits book${_bookHits == 1 ? '' : 's'}',
+                '${_results.length} matches in ${translationByCode(_searchCode).name} · $_bookHits book${_bookHits == 1 ? '' : 's'}',
                 style: TextStyle(
                   color: theme.textDim,
                   fontSize: 12,

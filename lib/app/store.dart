@@ -37,6 +37,7 @@ class AppStore extends ChangeNotifier {
   double lineHeight = 1.75;
   bool showVerseNumbers = true;
   bool justifyText = true;
+  String fontFamily = 'serif'; // serif | sans | mono
   String compareCode = 'niv';
   bool compareOn = false;
   String activePlanId = 'whole';
@@ -58,9 +59,23 @@ class AppStore extends ChangeNotifier {
   int quizCorrect = 0;
   final Map<String, double> quizBest = {};
 
+  // ── Memory (memorized verses) ──────────────────────────────────────
+  int get memorizedCount => memorized.length;
+
+  bool isMemorized(String slug, int chapter, int verse) =>
+      memorized.contains('$slug/$chapter/$verse');
+
+  void toggleMemorized(VerseRef ref) {
+    final key = '${ref.slug}/${ref.chapter}/${ref.verse}';
+    if (!memorized.add(key)) memorized.remove(key);
+    notifyListeners();
+    persist();
+  }
+
   // ── Annotations ────────────────────────────────────────────────────
   final List<Annotation> annotations = [];
   List<VerseRef> recents = [];
+  final Set<String> memorized = {};
 
   TranslationMeta get translation => translationByCode(translationCode);
 
@@ -77,6 +92,7 @@ class AppStore extends ChangeNotifier {
         lineHeight = (data['lineHeight'] as num?)?.toDouble() ?? 1.75;
         showVerseNumbers = data['vnums'] as bool? ?? true;
         justifyText = data['justify'] as bool? ?? true;
+        fontFamily = data['fontFamily'] as String? ?? 'serif';
         compareCode = data['compareCode'] as String? ?? 'niv';
         compareOn = data['compareOn'] as bool? ?? false;
         activePlanId = data['activePlan'] as String? ?? 'whole';
@@ -114,6 +130,10 @@ class AppStore extends ChangeNotifier {
         recents = r
             .map((e) => VerseRef.fromJson(e as Map<String, dynamic>))
             .toList();
+        final mem = data['memorized'] as List<dynamic>? ?? const [];
+        memorized
+          ..clear()
+          ..addAll(mem.map((e) => e as String));
       } catch (_) {
         // Corrupt state: fall back to defaults.
       }
@@ -131,6 +151,7 @@ class AppStore extends ChangeNotifier {
       'lineHeight': lineHeight,
       'vnums': showVerseNumbers,
       'justify': justifyText,
+      'fontFamily': fontFamily,
       'compareCode': compareCode,
       'compareOn': compareOn,
       'activePlan': activePlanId,
@@ -145,6 +166,7 @@ class AppStore extends ChangeNotifier {
       'quizBest': quizBest,
       'annots': annotations.map((a) => a.toJson()).toList(),
       'recents': recents.map((r) => r.toJson()).toList(),
+      'memorized': memorized.toList(),
     };
     await prefs.setString(storageKey, jsonEncode(data));
   }
@@ -166,6 +188,7 @@ class AppStore extends ChangeNotifier {
     lastRef = const VerseRef('genesis', 1);
     readChapters.clear();
     dayCounts.clear();
+    memorized.clear();
     totalVersesRead = 0;
     streakDays = 0;
     lastReadDate = '';
@@ -211,6 +234,13 @@ class AppStore extends ChangeNotifier {
 
   void setJustify(bool v) {
     justifyText = v;
+    notifyListeners();
+    persist();
+  }
+
+  void setFontFamily(String family) {
+    if (!const ['serif', 'sans', 'mono'].contains(family)) return;
+    fontFamily = family;
     notifyListeners();
     persist();
   }

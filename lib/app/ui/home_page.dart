@@ -14,6 +14,7 @@ import 'scope.dart';
 import 'settings_page.dart';
 import 'stats_page.dart';
 import 'quiz_page.dart';
+import 'memorize_page.dart';
 import 'widgets.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,6 +58,18 @@ class _HomePageState extends State<HomePage> {
     final today = DateTime.now();
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            tooltip: 'Settings',
+            icon: const Icon(Icons.tune),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsPage()),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -318,12 +331,12 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _ActionTile(
-                      icon: Icons.bar_chart,
-                      label: 'Stats',
+                      icon: Icons.bookmark_add_outlined,
+                      label: 'Memorize',
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const StatsPage(),
+                          builder: (_) => const MemorizePage(),
                         ),
                       ),
                     ),
@@ -331,12 +344,12 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _ActionTile(
-                      icon: Icons.tune,
-                      label: 'Settings',
+                      icon: Icons.bar_chart,
+                      label: 'Stats',
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const SettingsPage(),
+                          builder: (_) => const StatsPage(),
                         ),
                       ),
                     ),

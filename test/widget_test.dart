@@ -20,5 +20,10 @@ void main() {
     expect(find.text('Library'), findsOneWidget);
     expect(find.text('Search'), findsOneWidget);
     expect(find.text('Plans'), findsOneWidget);
+
+    // Home quick actions.
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text('Random chapter'), findsOneWidget);
+    expect(find.text('Memorize'), findsOneWidget);
   });
 }
