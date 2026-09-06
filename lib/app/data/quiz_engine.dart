@@ -217,7 +217,7 @@ class QuizEngine {
       if (mode == QuizMode.mixed || mode == QuizMode.whichBook) _qWhichBook,
       if (mode == QuizMode.mixed || mode == QuizMode.finishVerse) _qFinishVerse,
       if (mode == QuizMode.mixed || mode == QuizMode.order) _qBookOrder,
-      if (mode == QuizMode.order) _qChapterCount,
+      if (mode == QuizMode.mixed || mode == QuizMode.order) _qChapterCount,
     ];
     final out = <QuizQuestion>[];
     var guard = 0;
