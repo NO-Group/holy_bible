@@ -221,9 +221,36 @@ const List<AppTheme> kAppThemes = [
   ),
 ];
 
-AppTheme themeById(String id) => kAppThemes.firstWhere(
+const List<AppTheme> kAdditionalThemes = [
+  AppTheme(
+    id: 'oled',
+    label: 'OLED',
+    icon: Icons.brightness_2_outlined,
+    background: Color(0xFF000000),
+    card: Color(0xFF0B0B0D),
+    surfaceAlt: Color(0xFF141417),
+    text: Color(0xFFF2F2F5),
+    textDim: Color(0xFF8E8E98),
+    accent: Color(0xFFF0B429),
+    accent2: Color(0xFFE8890C),
+    verseNumber: Color(0xFFF0B429),
+    border: Color(0xFF232327),
+  ),
+];
+
+List<AppTheme> get kAllThemes => [...kAppThemes, ...kAdditionalThemes];
+
+AppTheme themeById(String id) => kAllThemes.firstWhere(
       (t) => t.id == id,
       orElse: () => kAppThemes.last,
+    );
+
+/// Resolves the 'auto' pseudo-theme against the device brightness so
+/// [appThemeOf] and MaterialApp always agree on the active palette.
+AppTheme resolveThemeId(String id, Brightness brightness) => themeById(
+      id == 'auto'
+          ? (brightness == Brightness.dark ? 'midnight' : 'light')
+          : id,
     );
 
 /// Highlight palette used for verse highlights (index 0..4).

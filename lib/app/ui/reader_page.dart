@@ -14,6 +14,7 @@ import '../audio/tts_service.dart';
 import '../data/repository.dart';
 import '../store.dart';
 import '../theme.dart';
+import 'guide_sheet.dart';
 import 'scope.dart';
 import 'widgets.dart';
 
@@ -343,7 +344,7 @@ class _ChapterPageState extends State<ChapterPage> {
       _scrolled = false;
       _primaryFuture = _fetch(app.translationCode);
     }
-    if (app.compareOn) {
+    if (app.compareOn && !app.compareAll) {
       if (app.compareCode != _secondaryCode) {
         _secondaryCode = app.compareCode;
         _secondaryFuture = _fetch(app.compareCode);
@@ -431,11 +432,22 @@ class _ChapterPageState extends State<ChapterPage> {
             _ChapterHeader(
               data: data,
               compare: app.compareOn,
+              compareAll: app.compareAll,
               speaking: _speaking,
+              slug: ref?.slug ?? '',
               onListen: () => _toggleSpeak(data),
             ),
             const SizedBox(height: 14),
-            if (secondary != null)
+            if (app.compareAll)
+              _PolyglotBody(
+                primary: data,
+                ref: ref,
+                store: app,
+                focusVerse: widget.focusVerse,
+                flashVerse: widget.flashVerse,
+                speakingVerse: _speakingVerse,
+              )
+            else if (secondary != null)
               _CompareBody(
                 primary: data,
                 ref: ref,
@@ -489,7 +501,8 @@ class _ChapterPageState extends State<ChapterPage> {
     void visit(Element element) {
       if (found != null) return;
       final w = element.widget;
-      if (w is _VerseRow && w.verse.number == verse) {
+      if ((w is _VerseRow && w.verse.number == verse) ||
+          (w is _PolyglotRow && w.number == verse)) {
         found = element;
         return;
       }
@@ -504,13 +517,17 @@ class _ChapterPageState extends State<ChapterPage> {
 class _ChapterHeader extends StatelessWidget {
   final ChapterData data;
   final bool compare;
+  final bool compareAll;
   final bool speaking;
+  final String slug;
   final VoidCallback onListen;
 
   const _ChapterHeader({
     required this.data,
     required this.compare,
+    required this.compareAll,
     required this.speaking,
+    required this.slug,
     required this.onListen,
   });
 
@@ -548,7 +565,9 @@ class _ChapterHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${translation.short} + ${secondary!.name}',
+                  compareAll
+                      ? '${translation.short} + 4 more'
+                      : '${translation.short} + ${secondary!.name}',
                   style: TextStyle(
                     color: theme.accent,
                     fontSize: 10.5,
@@ -582,6 +601,11 @@ class _ChapterHeader extends StatelessWidget {
                 '$words words · ~$minutes min read',
                 style: TextStyle(color: theme.textDim, fontSize: 13),
               ),
+            ),
+            IconButton(
+              onPressed: () => showGuideSheet(context, slug),
+              tooltip: 'Book study guide',
+              icon: Icon(Icons.menu_book, size: 20, color: theme.textDim),
             ),
             TextButton.icon(
               onPressed: onListen,
@@ -801,6 +825,10 @@ class _VerseRow extends StatelessWidget {
         store,
         VerseRef(ref.slug, ref.chapter, verse.number),
       ),
+      onLongPress: () {
+        store.setHighlight(VerseRef(ref.slug, ref.chapter, verse.number), 0);
+        showSnack(context, 'Highlighted in gold — tap again for more options');
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 700),
         margin: const EdgeInsets.symmetric(vertical: 1),
@@ -1185,6 +1213,205 @@ class _SheetAction extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PolyglotBody extends StatefulWidget {
+  final ChapterData primary;
+  final VerseRef? ref;
+  final AppStore store;
+  final int? focusVerse;
+  final int? flashVerse;
+  final int? speakingVerse;
+
+  const _PolyglotBody({
+    required this.primary,
+    required this.ref,
+    required this.store,
+    this.focusVerse,
+    this.flashVerse,
+    this.speakingVerse,
+  });
+
+  @override
+  State<_PolyglotBody> createState() => _PolyglotBodyState();
+}
+
+class _PolyglotBodyState extends State<_PolyglotBody> {
+  late Future<List<ChapterData>> _allFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _allFuture = _load();
+  }
+
+  Future<List<ChapterData>> _load() {
+    final ref = widget.ref;
+    if (ref == null) {
+      return Future.value(const []);
+    }
+    return Future.wait([
+      widget.store.repo.chapter('kjv', ref.slug, ref.chapter),
+      widget.store.repo.chapter('niv', ref.slug, ref.chapter),
+      widget.store.repo.chapter('nlt', ref.slug, ref.chapter),
+      widget.store.repo.chapter('nwt', ref.slug, ref.chapter),
+      widget.store.repo.chapter('original', ref.slug, ref.chapter),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = appThemeOf(context);
+    return FutureBuilder<List<ChapterData>>(
+      future: _allFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        final list = snapshot.data!;
+        if (list.isEmpty) return const SizedBox.shrink();
+        // Lead with the reader's active translation, then the other four.
+        final ordered = [
+          widget.primary,
+          ...list.where((c) => c.code != widget.primary.code),
+        ];
+        final count = ordered
+            .map((c) => c.verses.length)
+            .reduce((a, b) => a < b ? a : b);
+        return Column(
+          children: [
+            for (var i = 0; i < count; i++)
+              if (ordered.any((c) => c.verses[i].hasText))
+                _PolyglotRow(
+                  number: i + 1,
+                  texts: [for (final c in ordered) c.verses[i]],
+                  codes: [for (final c in ordered) c.code],
+                  ref: widget.ref ?? const VerseRef('genesis', 1, 1),
+                  store: widget.store,
+                  focus: widget.focusVerse == i + 1,
+                  flash: widget.flashVerse == i + 1,
+                  spoken: widget.speakingVerse == i + 1,
+                ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PolyglotRow extends StatelessWidget {
+  final int number;
+  final List<VerseData> texts;
+  final List<String> codes;
+  final VerseRef ref;
+  final AppStore store;
+  final bool focus;
+  final bool flash;
+  final bool spoken;
+
+  const _PolyglotRow({
+    required this.number,
+    required this.texts,
+    required this.codes,
+    required this.ref,
+    required this.store,
+    required this.focus,
+    required this.flash,
+    required this.spoken,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = appThemeOf(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 32,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                '$number',
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: theme.verseNumber,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: spoken
+                    ? theme.accent.withValues(alpha: 0.22)
+                    : focus || flash
+                        ? theme.accentSoft
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < texts.length; i++)
+                    if (texts[i].hasText) ...[
+                      if (i > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text.rich(
+                            TextSpan(children: [
+                              TextSpan(
+                                text: '${translationByCode(codes[i]).short} · ',
+                                style: TextStyle(
+                                  color: theme.accent,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              TextSpan(
+                                text: texts[i].text,
+                                style: TextStyle(
+                                  color: i == 0 ? theme.text : theme.textDim,
+                                  fontSize: i == 0
+                                      ? store.fontSize
+                                      : store.fontSize - 2.5,
+                                  height: store.lineHeight,
+                                  fontFamilyFallback: const [
+                                    'Georgia',
+                                    'serif',
+                                  ],
+                                ),
+                              ),
+                            ]),
+                          ),
+                        )
+                      else
+                        VerseText(
+                          texts[i].text,
+                          fontSize: store.fontSize,
+                          lineHeight: store.lineHeight,
+                          justify: store.justifyText,
+                          family: store.fontFamily,
+                        ),
+                    ],
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1641,6 +1868,25 @@ class _TranslationSheet extends StatelessWidget {
                 style: TextStyle(color: theme.textDim, fontSize: 12),
               ),
             ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              value: app.compareAll,
+              onChanged: (v) {
+                app.setCompareAll(v);
+                onChanged();
+              },
+              title: Text(
+                'Show all 5 translations',
+                style: TextStyle(
+                  color: theme.text,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              subtitle: Text(
+                'Stack KJV, NIV, NLT, NWT and the original text per verse',
+                style: TextStyle(color: theme.textDim, fontSize: 12),
+              ),
+            ),
             if (app.compareOn) ...[
               const SizedBox(height: 4),
               Text(
@@ -1712,8 +1958,8 @@ class _ReaderSettingsSheet extends StatelessWidget {
                   child: Slider(
                     value: app.fontSize,
                     min: 13,
-                    max: 26,
-                    divisions: 13,
+                    max: 30,
+                    divisions: 17,
                     onChanged: (v) => app.setFontSize(v),
                   ),
                 ),

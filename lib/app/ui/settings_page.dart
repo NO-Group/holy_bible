@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../data/models.dart';
 import '../theme.dart';
 import 'scope.dart';
+import 'intro_page.dart';
 import 'widgets.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -77,14 +78,30 @@ class SettingsPage extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final t in kAppThemes)
-                  ChoiceChip(
+                for (final t in kAllThemes)
+                  if (t.id != 'auto')
+                    ChoiceChip(
                     avatar: Icon(t.icon, size: 16),
                     label: Text(t.label),
                     selected: app.themeId == t.id,
                     onSelected: (_) => app.setTheme(t.id),
                   ),
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: SwitchListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                tileColor: theme.surfaceAlt,
+                value: app.themeId == 'auto',
+                onChanged: (v) => app.setTheme(v ? 'auto' : 'midnight'),
+                title: const Text('Follow system theme'),
+                subtitle: const Text(
+                  'Automatically use light or dark with your device',
+                ),
+              ),
             ),
             _SectionTitle('READING'),
             ListTile(
@@ -97,8 +114,8 @@ class SettingsPage extends StatelessWidget {
               subtitle: Slider(
                 value: app.fontSize,
                 min: 13,
-                max: 26,
-                divisions: 13,
+                max: 30,
+                divisions: 17,
                 onChanged: (v) => app.setFontSize(v),
               ),
               trailing: Text('${app.fontSize.round()}'),
@@ -155,7 +172,113 @@ class SettingsPage extends StatelessWidget {
               onChanged: (v) => app.setJustify(v),
               title: const Text('Justified text'),
             ),
+            _SectionTitle('GOALS'),
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: theme.surfaceAlt,
+              leading: const Icon(Icons.flag_outlined),
+              title: const Text('Monthly reading goal'),
+              subtitle: Text('${app.monthlyGoal} chapters · '
+                  '${app.goalMonthTotal} done this month'),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () async {
+                  await showDialog<int>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('Monthly reading goal'),
+                      content: StatefulBuilder(
+                        builder: (context, setState) => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${app.monthlyGoal}',
+                              style: TextStyle(
+                                color: theme.accent,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            Slider(
+                              value: app.monthlyGoal.toDouble(),
+                              min: 10,
+                              max: 120,
+                              divisions: 22,
+                              onChanged: (v) => setState(() =>
+                                  app.setMonthlyGoal(v.round())),
+                            ),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pop(dialogContext),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
             _SectionTitle('DATA'),
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: theme.surfaceAlt,
+              leading: const Icon(Icons.explore_outlined),
+              title: const Text('Replay welcome tour'),
+              subtitle: const Text('See the intro again'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const IntroPage()),
+              ),
+            ),
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: theme.surfaceAlt,
+              leading: const Icon(Icons.backup_outlined),
+              title: const Text('Export backup'),
+              subtitle: const Text(
+                'Copy all settings, notes, highlights and progress as JSON',
+              ),
+              onTap: () => copyToClipboard(
+                context,
+                app.exportBackup(),
+                message: 'Backup copied — paste it into “Import backup” on any device',
+              ),
+            ),
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: theme.surfaceAlt,
+              leading: const Icon(Icons.settings_backup_restore),
+              title: const Text('Import backup'),
+              subtitle: const Text('Restore from a previously exported JSON'),
+              onTap: () async {
+                final raw = await promptText(
+                  context,
+                  title: 'Paste backup JSON',
+                  hint: 'Paste the exported backup here…',
+                  confirmLabel: 'Restore',
+                );
+                if (raw == null || raw.isEmpty) return;
+                final ok = app.importBackup(raw);
+                if (context.mounted) {
+                  showSnack(
+                    context,
+                    ok ? 'Backup restored successfully' : 'Invalid backup data',
+                  );
+                }
+              },
+            ),
             ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -198,7 +321,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Selah v2.0 — 66 books · 1,189 chapters · 31,104 verses '
+                    'Selah v3.0 — 66 books · 1,189 chapters · 31,104 verses '
                     'per version\n'
                     '• Five translations bundled: KJV, NIV, NLT, NWT and the '
                     'original Hebrew (Masoretic Text) & Greek (Textus '

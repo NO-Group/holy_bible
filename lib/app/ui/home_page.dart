@@ -206,6 +206,72 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 16),
 
+              // ── Today's focus ──────────────────────────────────────
+              _FocusCard(today: today),
+              const SizedBox(height: 16),
+
+              // ── Monthly goal ───────────────────────────────────────
+              SectionCard(
+                child: Row(
+                  children: [
+                    ProgressRing(
+                      value: app.goalProgress,
+                      size: 62,
+                      center: Text(
+                        '${(app.goalProgress * 100).round()}%',
+                        style: TextStyle(
+                          color: theme.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'MONTHLY GOAL',
+                            style: TextStyle(
+                              color: theme.accent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${app.goalMonthTotal} of ${app.monthlyGoal} chapters this month',
+                            style: TextStyle(
+                              color: theme.text,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            app.goalProgress >= 1
+                                ? 'Goal reached — what a month! 🎉'
+                                : '${app.monthlyGoal - app.goalMonthTotal} to go',
+                            style: TextStyle(
+                              color: theme.textDim,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Adjust goal',
+                      icon: Icon(Icons.tune, color: theme.textDim, size: 20),
+                      onPressed: () => _adjustGoal(context, app),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
               // ── Continue reading ───────────────────────────────────
               FutureBuilder<List<BookInfo>>(
                 future: _booksFuture,
@@ -592,6 +658,168 @@ class _RoundIcon extends StatelessWidget {
           padding: const EdgeInsets.all(9),
           child: Icon(icon, color: Colors.white, size: 18),
         ),
+      ),
+    );
+  }
+}
+
+
+Future<void> _adjustGoal(BuildContext context, AppStore app) async {
+  final theme = appThemeOf(context);
+  await showDialog<int>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Monthly reading goal'),
+      content: StatefulBuilder(
+        builder: (context, setState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${app.monthlyGoal} chapters / month',
+              style: TextStyle(
+                color: theme.accent,
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            Slider(
+              value: app.monthlyGoal.toDouble(),
+              min: 10,
+              max: 120,
+              divisions: 22,
+              onChanged: (v) => setState(() => app.setMonthlyGoal(v.round())),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
+}
+
+class _FocusCard extends StatelessWidget {
+  final DateTime today;
+
+  const _FocusCard({required this.today});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = appThemeOf(context);
+    final app = AppScope.of(context);
+    final idx = verseOfTheDayIndex(today);
+    const reflect = [
+      'Read the verse slowly. Which word stops you?',
+      'What does this reveal about who God is?',
+      'Where in your life does this verse speak first?',
+      'Say the promise back to God in your own words.',
+    ];
+    const pray = [
+      'Lord, shape my heart around this truth today.',
+      'Father, help me live this verse where I am.',
+      'God, thank you for a word that endures.',
+      'Spirit, remind me of this when I forget.',
+    ];
+    const act = [
+      'Share the verse with one person today.',
+      'Write it where you will see it this week.',
+      'Turn it into a one-line prayer for someone.',
+      'Read it aloud twice before you sleep.',
+    ];
+    final votd = kVerseOfTheDay[idx];
+    return SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "TODAY'S FOCUS",
+            style: TextStyle(
+              color: theme.accent,
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _FocusLine(icon: Icons.visibility_outlined, label: 'Reflect',
+              text: reflect[idx % reflect.length]),
+          _FocusLine(icon: Icons.volunteer_activism_outlined, label: 'Pray',
+              text: pray[idx % pray.length]),
+          _FocusLine(icon: Icons.wb_sunny_outlined, label: 'Act',
+              text: act[idx % act.length]),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () async {
+              final text = await promptText(
+                context,
+                title: 'Journal on today’s verse',
+                initial: '',
+                hint:
+                    '${votd.slug.split('_').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')} ${votd.ch}:${votd.v} — what do you want to remember?',
+              );
+              if (text != null && text.trim().isNotEmpty) {
+                app.setNote(VerseRef(votd.slug, votd.ch, votd.v), text);
+                if (context.mounted) {
+                  showSnack(context, 'Journal entry saved to your notes');
+                }
+              }
+            },
+            icon: const Icon(Icons.edit_note, size: 18),
+            label: const Text('Journal on this verse'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FocusLine extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String text;
+
+  const _FocusLine({
+    required this.icon,
+    required this.label,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = appThemeOf(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: theme.accent),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 58,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: theme.accent,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: theme.text,
+                fontSize: 12.5,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

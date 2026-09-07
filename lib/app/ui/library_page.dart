@@ -9,6 +9,7 @@ import '../data/repository.dart';
 import '../data/topics.dart';
 import '../store.dart';
 import '../theme.dart';
+import 'guide_sheet.dart';
 import 'scope.dart';
 import 'widgets.dart';
 
@@ -267,6 +268,11 @@ class _BookRow extends StatelessWidget {
                 Text(
                   '$read/${book.chapterCount}',
                   style: TextStyle(color: theme.textDim, fontSize: 11.5),
+                ),
+                IconButton(
+                  tooltip: 'Study guide',
+                  onPressed: () => showGuideSheet(context, book.slug),
+                  icon: Icon(Icons.menu_book, color: theme.textDim, size: 20),
                 ),
                 Icon(Icons.chevron_right, color: theme.textDim, size: 20),
               ],

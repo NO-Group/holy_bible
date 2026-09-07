@@ -40,7 +40,10 @@ class AppStore extends ChangeNotifier {
   String fontFamily = 'serif'; // serif | sans | mono
   String compareCode = 'niv';
   bool compareOn = false;
+  bool compareAll = false;
   String activePlanId = 'whole';
+  int monthlyGoal = 30;
+  bool onboarded = false;
 
   // ── Navigation ──────────────────────────────────────────────────────
   int navIndex = 0;
@@ -59,6 +62,97 @@ class AppStore extends ChangeNotifier {
   int quizCorrect = 0;
   final Map<String, double> quizBest = {};
 
+  // ── Goals ──────────────────────────────────────────────────────────
+  int get monthKeySeed => DateTime.now().year * 100 + DateTime.now().month;
+
+  int get goalMonthTotal => monthCounts[goalMonthKey(DateTime.now())] ?? 0;
+
+  double get goalProgress =>
+      monthlyGoal == 0 ? 0 : (goalMonthTotal / monthlyGoal).clamp(0, 1).toDouble();
+
+  static String goalMonthKey(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}';
+
+  // ── Backup / restore ───────────────────────────────────────────────
+  String exportBackup() => jsonEncode({
+        'selahBackup': 3,
+        'translation': translationCode,
+        'theme': themeId,
+        'fontSize': fontSize,
+        'lineHeight': lineHeight,
+        'vnums': showVerseNumbers,
+        'justify': justifyText,
+        'fontFamily': fontFamily,
+        'compareCode': compareCode,
+        'compareOn': compareOn,
+        'compareAll': compareAll,
+        'activePlan': activePlanId,
+        'monthlyGoal': monthlyGoal,
+        'last': lastRef.toJson(),
+        'read': readChapters.toList(),
+        'totalVerses': totalVersesRead,
+        'streak': streakDays,
+        'lastRead': lastReadDate,
+        'quizPlayed': quizzesPlayed,
+        'quizCorrect': quizCorrect,
+        'quizBest': quizBest,
+        'annots': annotations.map((a) => a.toJson()).toList(),
+        'memorized': memorized.toList(),
+        'searchHistory': searchHistory,
+      });
+
+  /// Restores settings, progress and annotations from a backup string.
+  /// Returns false when the payload is invalid.
+  bool importBackup(String raw) {
+    try {
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      if (data['selahBackup'] == null) return false;
+      translationCode = data['translation'] as String? ?? 'kjv';
+      themeId = data['theme'] as String? ?? 'midnight';
+      fontSize = (data['fontSize'] as num?)?.toDouble() ?? fontSize;
+      lineHeight = (data['lineHeight'] as num?)?.toDouble() ?? lineHeight;
+      showVerseNumbers = data['vnums'] as bool? ?? showVerseNumbers;
+      justifyText = data['justify'] as bool? ?? justifyText;
+      fontFamily = data['fontFamily'] as String? ?? fontFamily;
+      compareCode = data['compareCode'] as String? ?? compareCode;
+      compareOn = data['compareOn'] as bool? ?? compareOn;
+      compareAll = data['compareAll'] as bool? ?? compareAll;
+      activePlanId = data['activePlan'] as String? ?? activePlanId;
+      monthlyGoal = (data['monthlyGoal'] as num?)?.toInt() ?? monthlyGoal;
+      lastRef = VerseRef.fromJson(
+          (data['last'] as Map<String, dynamic>?) ?? const {});
+      readChapters
+        ..clear()
+        ..addAll((data['read'] as List<dynamic>? ?? const []).map((e) => e as String));
+      totalVersesRead = (data['totalVerses'] as num?)?.toInt() ?? totalVersesRead;
+      streakDays = (data['streak'] as num?)?.toInt() ?? streakDays;
+      lastReadDate = data['lastRead'] as String? ?? lastReadDate;
+      quizzesPlayed = (data['quizPlayed'] as num?)?.toInt() ?? quizzesPlayed;
+      quizCorrect = (data['quizCorrect'] as num?)?.toInt() ?? quizCorrect;
+      final best = data['quizBest'] as Map<String, dynamic>? ?? const {};
+      quizBest
+        ..clear()
+        ..addAll(best.map((k, v) => MapEntry(k, (v as num).toDouble())));
+      annotations
+        ..clear()
+        ..addAll((data['annots'] as List<dynamic>? ?? const [])
+            .map((e) => Annotation.fromJson(e as Map<String, dynamic>)));
+      memorized
+        ..clear()
+        ..addAll((data['memorized'] as List<dynamic>? ?? const [])
+            .map((e) => e as String));
+      searchHistory
+        ..clear()
+        ..addAll(
+            (data['searchHistory'] as List<dynamic>? ?? const []).map((e) => e as String));
+      notifyListeners();
+      persist();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // ── Memory (memorized verses) ──────────────────────────────────────
   int get memorizedCount => memorized.length;
 
@@ -76,6 +170,8 @@ class AppStore extends ChangeNotifier {
   final List<Annotation> annotations = [];
   List<VerseRef> recents = [];
   final Set<String> memorized = {};
+  final Map<String, int> monthCounts = {};
+  final List<String> searchHistory = [];
 
   TranslationMeta get translation => translationByCode(translationCode);
 
@@ -95,7 +191,10 @@ class AppStore extends ChangeNotifier {
         fontFamily = data['fontFamily'] as String? ?? 'serif';
         compareCode = data['compareCode'] as String? ?? 'niv';
         compareOn = data['compareOn'] as bool? ?? false;
+        compareAll = data['compareAll'] as bool? ?? false;
         activePlanId = data['activePlan'] as String? ?? 'whole';
+        monthlyGoal = (data['monthlyGoal'] as num?)?.toInt() ?? 30;
+        onboarded = data['onboarded'] as bool? ?? false;
         lastRef = VerseRef.fromJson(
           (data['last'] as Map<String, dynamic>?) ?? const {},
         );
@@ -134,6 +233,14 @@ class AppStore extends ChangeNotifier {
         memorized
           ..clear()
           ..addAll(mem.map((e) => e as String));
+        final months = data['monthCounts'] as Map<String, dynamic>? ?? const {};
+        monthCounts
+          ..clear()
+          ..addAll(months.map((k, v) => MapEntry(k, (v as num).toInt())));
+        final hist = data['searchHistory'] as List<dynamic>? ?? const [];
+        searchHistory
+          ..clear()
+          ..addAll(hist.map((e) => e as String));
       } catch (_) {
         // Corrupt state: fall back to defaults.
       }
@@ -154,7 +261,10 @@ class AppStore extends ChangeNotifier {
       'fontFamily': fontFamily,
       'compareCode': compareCode,
       'compareOn': compareOn,
+      'compareAll': compareAll,
       'activePlan': activePlanId,
+      'monthlyGoal': monthlyGoal,
+      'onboarded': onboarded,
       'last': lastRef.toJson(),
       'read': readChapters.toList(),
       'dayCounts': dayCounts,
@@ -167,6 +277,8 @@ class AppStore extends ChangeNotifier {
       'annots': annotations.map((a) => a.toJson()).toList(),
       'recents': recents.map((r) => r.toJson()).toList(),
       'memorized': memorized.toList(),
+      'monthCounts': monthCounts,
+      'searchHistory': searchHistory,
     };
     await prefs.setString(storageKey, jsonEncode(data));
   }
@@ -189,6 +301,11 @@ class AppStore extends ChangeNotifier {
     readChapters.clear();
     dayCounts.clear();
     memorized.clear();
+    monthCounts.clear();
+    searchHistory.clear();
+    compareAll = false;
+    monthlyGoal = 30;
+    onboarded = false;
     totalVersesRead = 0;
     streakDays = 0;
     lastReadDate = '';
@@ -215,7 +332,7 @@ class AppStore extends ChangeNotifier {
   }
 
   void setFontSize(double v) {
-    fontSize = v.clamp(13, 26).toDouble();
+    fontSize = v.clamp(13, 30).toDouble();
     notifyListeners();
     persist();
   }
@@ -253,6 +370,44 @@ class AppStore extends ChangeNotifier {
 
   void setCompareOn(bool v) {
     compareOn = v;
+    notifyListeners();
+    persist();
+  }
+
+  void setCompareAll(bool v) {
+    compareAll = v;
+    notifyListeners();
+    persist();
+  }
+
+  void setMonthlyGoal(int v) {
+    monthlyGoal = v.clamp(5, 500);
+    notifyListeners();
+    persist();
+  }
+
+  void setOnboarded() {
+    if (onboarded) return;
+    onboarded = true;
+    notifyListeners();
+    persist();
+  }
+
+  void addSearchHistory(String query) {
+    final q = query.trim();
+    if (q.isEmpty) return;
+    searchHistory
+      ..remove(q)
+      ..insert(0, q);
+    if (searchHistory.length > 10) {
+      searchHistory.removeRange(10, searchHistory.length);
+    }
+    notifyListeners();
+    persist();
+  }
+
+  void clearSearchHistory() {
+    searchHistory.clear();
     notifyListeners();
     persist();
   }
@@ -304,6 +459,8 @@ class AppStore extends ChangeNotifier {
     if (!isNew) return false;
     totalVersesRead += verseCount;
     final today = _todayKey();
+    final month = today.substring(0, 7);
+    monthCounts[month] = (monthCounts[month] ?? 0) + 1;
     dayCounts[today] = (dayCounts[today] ?? 0) + 1;
     final now = DateTime.now();
     if (lastReadDate == today) {

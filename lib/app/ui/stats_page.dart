@@ -78,6 +78,62 @@ class _StatsPageState extends State<StatsPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 14),
+              // Monthly goal
+              SectionCard(
+                child: Row(
+                  children: [
+                    ProgressRing(
+                      value: app.goalProgress,
+                      size: 58,
+                      center: Text(
+                        '${(app.goalProgress * 100).round()}%',
+                        style: TextStyle(
+                          color: theme.accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'MONTHLY GOAL',
+                            style: TextStyle(
+                              color: theme.accent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${app.goalMonthTotal} of ${app.monthlyGoal} chapters this month',
+                            style: TextStyle(
+                              color: theme.text,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            app.goalProgress >= 1
+                                ? 'Completed — keep the momentum!'
+                                : '${app.monthlyGoal - app.goalMonthTotal} chapters remaining',
+                            style: TextStyle(
+                              color: theme.textDim,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [

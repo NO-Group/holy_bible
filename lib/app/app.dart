@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'store.dart';
 import 'theme.dart';
 import 'ui/home_shell.dart';
+import 'ui/intro_page.dart';
 import 'ui/scope.dart';
 
 class SelahApp extends StatelessWidget {
@@ -20,12 +21,18 @@ class SelahApp extends StatelessWidget {
       child: AnimatedBuilder(
         animation: store,
         builder: (context, _) {
-          final theme = themeById(store.themeId);
+          final theme = resolveThemeId(
+            store.themeId,
+            WidgetsBinding.instance.platformDispatcher.platformBrightness,
+          );
           return MaterialApp(
+            key: ValueKey(store.onboarded),
             title: 'Selah — Holy Bible',
             debugShowCheckedModeBanner: false,
             theme: theme.build(),
-            home: const HomeShell(),
+            home: store.onboarded
+                ? const HomeShell()
+                : const IntroPage(),
           );
         },
       ),

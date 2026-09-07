@@ -1,6 +1,6 @@
 # Selah — Holy Bible (Flutter)
 
-**Selah v2.0** is an advanced, *fully offline* Bible app for Flutter, built
+**Selah v3.0** is an advanced, *fully offline* Bible app for Flutter, built
 around the complete Scripture dataset already shipped in this repository
 (`lib/Holy_Bible-main/bible`). No network, no API keys, no scraping — the whole
 Bible lives inside the app bundle.
@@ -17,7 +17,7 @@ suite, then builds and uploads:
 
 Grab them from the Actions run page
 (**Actions → Build APK → latest run → Artifacts**), or from the
-`arena/artifacts-bin` branch (`artifacts/selah-2.0.0.apk`) for the universal
+`arena/artifacts-bin` branch (`artifacts/selah-3.0.0.apk`) for the universal
 build.
 
 ## What's inside
@@ -31,12 +31,18 @@ build.
   - ORIG — Original manuscripts: Hebrew (Westminster Leningrad Codex) for the
     Old Testament, Greek (Textus Receptus) for the New Testament
 - **Reader**: swipeable pager across all 1,189 chapters, verse numbers,
-  justified text, adjustable size/line-height, **serif/sans/mono fonts**,
-  five hand-tuned themes (Parchment, Sepia, Slate, Midnight),
-  jump-to-verse deep links, word count and ~reading-time estimate.
+  justified text, adjustable size/line-height (up to 30 pt),
+  **serif/sans/mono fonts**, jump-to-verse deep links, word count and
+  ~reading-time estimate — plus a **long-press quick gold highlight**.
 - **Chapter audio**: listen to any chapter read aloud (device text-to-speech)
   with a live spotlight on the verse being spoken.
-- **Parallel mode**: read any two translations side by side.
+- **Parallel mode**: read any two translations side by side, or **stack all
+  five translations per verse** with the active version first.
+- **66 book study guides**: authorship, era, theme, a one-line summary and a
+  validated key verse — open from Library or the Reader header and jump
+  straight to the key verse.
+- **Themes**: six hand-tuned palettes (Parchment, Sepia, Slate, Midnight,
+  **OLED pure-black**) plus an **auto / follow-system** mode.
 - **Per-verse actions**: copy, share, bookmark, 5-color highlights, personal
   notes, memorize toggle, one-tap jump to the original-language text.
 - **Memorize studio**: hide-and-reveal flashcard drills over famous verses
@@ -54,8 +60,16 @@ build.
   which book, finish the famous verse, book order, chapter counts — with
   per-mode best scores.
 - **Stats & streaks**: reading streak, chapters/verses read, books finished,
-  7-day activity chart, Bible-completion meter, plan progress, and
+  7-day activity chart, Bible-completion meter, plan progress,
+  **monthly reading goal** (adjustable 10–120 chapters), and
   **16 achievements** (chapters, streaks, quizzes, memory, notes).
+- **Home dashboard**: verse of the day, **Today's Focus** (reflect · pray ·
+  act prompts) with one-tap journaling, monthly-goal ring, continue-reading
+  and plan shortcuts.
+- **Search history**: your last 10 searches as one-tap chips.
+- **Onboarding**: a first-run tour (skippable, replayable from Settings).
+- **Backup & restore**: export all settings, progress, notes, highlights and
+  memory as a JSON backup; paste it back on any device.
 - **Everything persists** (shared_preferences): settings, last position,
   progress, bookmarks, highlights, notes, plans, quiz records.
 
@@ -93,21 +107,25 @@ lib/
     │   ├── models.dart           # TranslationMeta, BookInfo, ChapterData, …
     │   ├── repository.dart       # asset loading, LRU bundle cache, global
     │   │                         #   chapter index, reference parser
+    │   ├── book_guides.dart      # 66 study guides + key-verse lookup
     │   ├── plans.dart            # plan definitions + progress math
     │   ├── quiz_engine.dart      # generated question builders
     │   └── verse_refs.dart       # verse-of-the-day + famous verse lists
     └── ui/
         ├── scope.dart            # InheritedNotifier for AppStore
+        ├── intro_page.dart       # first-run onboarding tour
         ├── home_shell.dart       # bottom-navigation shell
-        ├── home_page.dart        # dashboard (VOTD, continue, plan, chart)
-        ├── reader_page.dart      # swipe pager, compare, verse sheets,
-        │                         #   chapter picker, reading settings
-        ├── search_page.dart      # full-text search + reference jump
-        ├── library_page.dart     # books, bookmarks, highlights, notes
+        ├── home_page.dart        # dashboard (VOTD, focus, goal, plan, chart)
+        ├── reader_page.dart      # swipe pager, compare/polyglot, guides,
+        │                         #   verse sheets, reading settings
+        ├── guide_sheet.dart      # book study-guide bottom sheet
+        ├── search_page.dart      # full-text search + history + reference jump
+        ├── library_page.dart     # books (+guides), bookmarks, highlights,
+        │                         #   notes
         ├── plans_page.dart       # reading plans
         ├── quiz_page.dart        # quiz flow
-        ├── stats_page.dart       # stats dashboard
-        ├── settings_page.dart    # preferences + reset
+        ├── stats_page.dart       # stats dashboard + monthly goal
+        ├── settings_page.dart    # themes, goals, backup/restore, reset
         └── widgets.dart          # shared components
 ```
 

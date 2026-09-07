@@ -87,6 +87,71 @@ void main() {
     expect(store.daysRead, 1);
   });
 
+  test('monthly goal counts chapters this month', () async {
+    final store = await _freshStore();
+    expect(store.monthlyGoal, 30);
+    expect(store.goalMonthTotal, 0);
+    expect(store.goalProgress, 0);
+    store.markChapterRead('genesis', 1, 31);
+    store.markChapterRead('genesis', 2, 31);
+    expect(store.goalMonthTotal, 2);
+    expect(store.goalProgress, closeTo(2 / 30, 0.0001));
+    store.setMonthlyGoal(5);
+    expect(store.goalProgress, closeTo(0.4, 0.0001));
+    store.setMonthlyGoal(500);
+    expect(store.goalProgress, closeTo(0.004, 0.0001));
+  });
+
+  test('search history caps at 10 and moves repeats to front', () async {
+    final store = await _freshStore();
+    for (var i = 0; i < 12; i++) {
+      store.addSearchHistory('query $i');
+    }
+    expect(store.searchHistory.length, 10);
+    expect(store.searchHistory.first, 'query 11');
+    store.addSearchHistory('query 5');
+    expect(store.searchHistory.length, 10);
+    expect(store.searchHistory.first, 'query 5');
+    store.clearSearchHistory();
+    expect(store.searchHistory, isEmpty);
+  });
+
+  test('backup export/import round trips settings and progress', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = AppStore(BibleRepository());
+    await store.load();
+    store.setTranslation('nlt');
+    store.setTheme('oled');
+    store.setCompareAll(true);
+    store.setMonthlyGoal(45);
+    store.setOnboarded();
+    store.markChapterRead('john', 3, 36);
+    store.setNote(const VerseRef('john', 3, 16), 'loved');
+    store.addSearchHistory('love');
+    store.toggleMemorized(const VerseRef('psalms', 23, 1));
+    final backup = store.exportBackup();
+    expect(backup, contains('selahBackup'));
+
+    final restored = AppStore(BibleRepository());
+    await restored.load();
+    expect(restored.importBackup(backup), isTrue);
+    expect(restored.translationCode, 'nlt');
+    expect(restored.themeId, 'oled');
+    expect(restored.compareAll, isTrue);
+    expect(restored.monthlyGoal, 45);
+    expect(restored.onboarded, isTrue);
+    expect(restored.isChapterRead('john', 3), isTrue);
+    expect(restored.notes.first.note, 'loved');
+    expect(restored.searchHistory, ['love']);
+    expect(restored.isMemorized('psalms', 23, 1), isTrue);
+  });
+
+  test('importBackup rejects foreign payloads', () async {
+    final store = await _freshStore();
+    expect(store.importBackup('{"other": true}'), isFalse);
+    expect(store.importBackup('not json at all'), isFalse);
+  });
+
   test('resetAll clears everything', () async {
     final store = await _freshStore();
     store.markChapterRead('genesis', 1, 31);

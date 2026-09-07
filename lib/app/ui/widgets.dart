@@ -8,8 +8,10 @@ import 'package:flutter/services.dart';
 import '../theme.dart';
 import 'scope.dart';
 
-AppTheme appThemeOf(BuildContext context) =>
-    themeById(AppScope.of(context).themeId);
+AppTheme appThemeOf(BuildContext context) => resolveThemeId(
+      AppScope.of(context).themeId,
+      MediaQuery.platformBrightnessOf(context),
+    );
 
 void showSnack(BuildContext context, String message) {
   ScaffoldMessenger.of(context)

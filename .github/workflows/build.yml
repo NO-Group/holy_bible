@@ -119,9 +119,9 @@ jobs:
       - name: Publish universal APK to artifacts branch
         run: |
           mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk artifacts/selah-2.0.0.apk
+          cp build/app/outputs/flutter-apk/app-release.apk artifacts/selah-3.0.0.apk
           git config user.name "ci-artifacts"
           git config user.email "ci@local"
-          git add -f artifacts/selah-2.0.0.apk
-          git commit -q -m "artifacts: Selah v2.0.0 universal APK" || true
+          git add -f artifacts/selah-3.0.0.apk
+          git commit -q -m "artifacts: Selah v3.0.0 universal APK" || true
           git push origin HEAD:arena/artifacts-bin --force || true

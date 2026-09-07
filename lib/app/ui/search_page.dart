@@ -80,6 +80,11 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  void _recordHistory() {
+    if (_query.isEmpty) return;
+    AppScope.read(context).addSearchHistory(_query);
+  }
+
   void _runSearch() {
     final app = AppScope.read(context);
     final repo = app.repo;
@@ -132,6 +137,7 @@ class _SearchPageState extends State<SearchPage> {
       _bookHits = bookHits;
       _searching = false;
     });
+    if (out.isNotEmpty) _recordHistory();
   }
 
   @override
@@ -233,6 +239,42 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
+          if (_query.isEmpty && app.searchHistory.isNotEmpty) ...[
+            SizedBox(
+              height: 42,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                children: [
+                  for (final q in app.searchHistory)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ActionChip(
+                        avatar: const Icon(Icons.history, size: 16),
+                        label: Text(q),
+                        onPressed: () {
+                          _controller.text = q;
+                          _controller.selection = TextSelection.collapsed(
+                            offset: q.length,
+                          );
+                          _onChanged(q);
+                        },
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ActionChip(
+                      avatar: const Icon(Icons.delete_outline, size: 16),
+                      label: const Text('Clear'),
+                      onPressed: () =>
+                          AppScope.read(context).clearSearchHistory(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           Expanded(
             child: _buildBody(theme),
           ),
