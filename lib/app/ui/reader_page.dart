@@ -1264,7 +1264,6 @@ class _PolyglotBodyState extends State<_PolyglotBody> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = appThemeOf(context);
     return FutureBuilder<List<ChapterData>>(
       future: _allFuture,
       builder: (context, snapshot) {
