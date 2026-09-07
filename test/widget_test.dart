@@ -26,7 +26,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = AppStore(BibleRepository());
     await store.load();
-    await store.setOnboarded();
+    store.setOnboarded();
 
     await tester.pumpWidget(SelahApp(store: store));
     await tester.pump();

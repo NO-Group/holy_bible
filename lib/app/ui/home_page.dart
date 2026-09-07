@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../data/models.dart';
 import '../data/plans.dart';
 import '../data/verse_refs.dart';
+import '../store.dart';
 import 'scope.dart';
 import 'settings_page.dart';
 import 'stats_page.dart';
