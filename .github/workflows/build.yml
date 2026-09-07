@@ -6,10 +6,12 @@ on:
     paths-ignore:
       - 'ci/analyze.log'
       - 'ci/test.log'
+      - 'artifacts/*.apk'
   pull_request:
     paths-ignore:
       - 'ci/analyze.log'
       - 'ci/test.log'
+      - 'artifacts/*.apk'
   workflow_dispatch:
 
 permissions:
@@ -113,3 +115,13 @@ jobs:
             build/app/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish universal APK to artifacts branch
+        run: |
+          mkdir -p artifacts
+          cp build/app/outputs/flutter-apk/app-release.apk artifacts/selah-2.0.0.apk
+          git config user.name "ci-artifacts"
+          git config user.email "ci@local"
+          git add -f artifacts/selah-2.0.0.apk
+          git commit -q -m "artifacts: Selah v2.0.0 universal APK" || true
+          git push origin HEAD:arena/artifacts-bin --force || true
