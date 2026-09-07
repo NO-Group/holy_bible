@@ -9,7 +9,8 @@ BibleBundle _syntheticBundle() {
         for (var c = 0; c < count; c++)
           [
             for (var v = 0; v < 6; v++)
-              '$prefix verse $v: the steadfast love of the Lord endures forever amen',
+              '$prefix verse $v: the steadfast love of the Lord endures forever, '
+                  'and its faithfulness reaches $prefix $v amen',
           ],
       ];
   return BibleBundle(
