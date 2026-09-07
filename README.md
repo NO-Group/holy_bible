@@ -1,9 +1,24 @@
 # Selah — Holy Bible (Flutter)
 
-**Selah** is an advanced, *fully offline* Bible app for Flutter, built around the
-complete Scripture dataset already shipped in this repository
+**Selah v2.0** is an advanced, *fully offline* Bible app for Flutter, built
+around the complete Scripture dataset already shipped in this repository
 (`lib/Holy_Bible-main/bible`). No network, no API keys, no scraping — the whole
 Bible lives inside the app bundle.
+
+## Download the APK
+
+Every commit triggers the **Build APK** GitHub Actions workflow
+(`.github/workflows/build.yml`): it runs `flutter analyze` + the full test
+suite, then builds and uploads:
+
+- `selah-apk` — **universal APK** (`selah-universal-release.apk`) plus per-ABI
+  builds (`arm64-v8a`, `armeabi-v7a`, `x86_64`)
+- `selah-appbundle` — Android App Bundle for Play Store deployment
+
+Grab them from the Actions run page
+(**Actions → Build APK → latest run → Artifacts**), or from the
+`arena/artifacts-bin` branch (`artifacts/selah-2.0.0.apk`) for the universal
+build.
 
 ## What's inside
 
@@ -16,14 +31,22 @@ Bible lives inside the app bundle.
   - ORIG — Original manuscripts: Hebrew (Westminster Leningrad Codex) for the
     Old Testament, Greek (Textus Receptus) for the New Testament
 - **Reader**: swipeable pager across all 1,189 chapters, verse numbers,
-  justified/serif reading, adjustable text size & line height, five hand-tuned
-  themes (Parchment, Sepia, Slate, Midnight), jump-to-verse deep links.
+  justified text, adjustable size/line-height, **serif/sans/mono fonts**,
+  five hand-tuned themes (Parchment, Sepia, Slate, Midnight),
+  jump-to-verse deep links, word count and ~reading-time estimate.
+- **Chapter audio**: listen to any chapter read aloud (device text-to-speech)
+  with a live spotlight on the verse being spoken.
 - **Parallel mode**: read any two translations side by side.
 - **Per-verse actions**: copy, share, bookmark, 5-color highlights, personal
-  notes, one-tap jump to the original-language text.
-- **Search**: instant full-text search across every verse (offline), OT/NT/book
-  scopes, highlighted matches, and a smart reference parser
-  (`john 3:16`, `psalm 23`, `1 cor 5` jump straight to the verse).
+  notes, memorize toggle, one-tap jump to the original-language text.
+- **Memorize studio**: hide-and-reveal flashcard drills over famous verses
+  with first-letter hints and a personal memorized treasury.
+- **Search**: instant full-text search across every verse (offline) with a
+  per-translation selector, OT/NT/book scopes, highlighted matches, and a smart
+  reference parser (`john 3:16`, `psalm 23`, `1 cor 5` jump straight to the
+  verse).
+- **Topical study**: 12 themes (love, faith, hope, prayer, wisdom, …) with
+  verses gathered live from the current translation.
 - **Reading plans**: Whole Bible (365d), Old Testament (180d), New Testament
   (90d), Gospels (30d), Wisdom & Worship (31d), Paul's Letters (40d) — with
   day-by-day progress rings and "read today" shortcuts.
@@ -31,7 +54,8 @@ Bible lives inside the app bundle.
   which book, finish the famous verse, book order, chapter counts — with
   per-mode best scores.
 - **Stats & streaks**: reading streak, chapters/verses read, books finished,
-  7-day activity chart, Bible-completion meter, plan progress.
+  7-day activity chart, Bible-completion meter, plan progress, and
+  **16 achievements** (chapters, streaks, quizzes, memory, notes).
 - **Everything persists** (shared_preferences): settings, last position,
   progress, bookmarks, highlights, notes, plans, quiz records.
 
