@@ -1,0 +1,29 @@
+
+::group::✅ Passing tests
+✅ /home/runner/work/holy_bible/holy_bible/test/plans_test.dart: gospels plan covers all chapters in canonical order
+✅ /home/runner/work/holy_bible/holy_bible/test/plans_test.dart: day chunks divide the plan evenly
+✅ /home/runner/work/holy_bible/holy_bible/test/plans_test.dart: progress derives from the read-chapter set
+✅ /home/runner/work/holy_bible/holy_bible/test/plans_test.dart: completed plan reports null next
+✅ /home/runner/work/holy_bible/holy_bible/test/plans_test.dart: current day follows reading pace
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: marks chapters read once and counts verses
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: annotations: bookmark, highlight, note lifecycle
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: memorized verses persist across reload
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: settings persist through save/load round trip
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: streak resets after a missed day and continues after a read day
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: monthly goal counts chapters this month
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: search history caps at 10 and moves repeats to front
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: backup export/import round trips settings and progress
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: importBackup rejects foreign payloads
+✅ /home/runner/work/holy_bible/holy_bible/test/store_test.dart: resetAll clears everything
+✅ /home/runner/work/holy_bible/holy_bible/test/widget_test.dart: first run shows the onboarding tour, then the home shell
+✅ /home/runner/work/holy_bible/holy_bible/test/repository_test.dart: BibleRepository (real bundled assets) loads all five translations with 66 books / 1189 chapters
+✅ /home/runner/work/holy_bible/holy_bible/test/repository_test.dart: BibleRepository (real bundled assets) chapter data matches bundle text
+✅ /home/runner/work/holy_bible/holy_bible/test/repository_test.dart: BibleRepository (real bundled assets) global index maps every reference and back
+✅ /home/runner/work/holy_bible/holy_bible/test/repository_test.dart: BibleRepository (real bundled assets) parses common references
+✅ /home/runner/work/holy_bible/holy_bible/test/widget_test.dart: Selah boots and shows the home shell
+✅ /home/runner/work/holy_bible/holy_bible/test/quiz_engine_test.dart: every mode builds a round of questions
+✅ /home/runner/work/holy_bible/holy_bible/test/quiz_engine_test.dart: mixed mode includes all question styles
+✅ /home/runner/work/holy_bible/holy_bible/test/quiz_engine_test.dart: generated questions are well-formed across seeds
+::endgroup::
+
+🎉 24 tests passed.

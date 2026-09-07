@@ -1,0 +1,11 @@
+Analyzing holy_bible...                                         
+
+   info • Use the null-aware operator '?.' rather than an explicit 'null' comparison. Try using '?.' • lib/app/ui/library_page.dart:547:26 • prefer_null_aware_operators
+   info • Use the null-aware operator '?.' rather than an explicit 'null' comparison. Try using '?.' • lib/app/ui/reader_page.dart:1093:26 • prefer_null_aware_operators
+warning • The value of the local variable 'theme' isn't used. Try removing the variable or using it • lib/app/ui/reader_page.dart:1267:11 • unused_local_variable
+   info • Statements in an if should be enclosed in a block. Try wrapping the statement in a block • lib/app/ui/search_page.dart:94:22 • curly_braces_in_flow_control_structures
+   info • Unnecessary use of string interpolation. Try replacing the string literal with the variable name • lib/app/ui/stats_page.dart:424:27 • unnecessary_string_interpolations
+   info • Use interpolation to compose strings and values. Try using string interpolation to build the composite string • lib/app/ui/stats_page.dart:424:94 • prefer_interpolation_to_compose_strings
+   info • Use the null-aware marker '?' rather than a null check via an 'if'. Try using '?' • lib/app/ui/widgets.dart:52:11 • use_null_aware_elements
+
+7 issues found. (ran in 7.1s)
